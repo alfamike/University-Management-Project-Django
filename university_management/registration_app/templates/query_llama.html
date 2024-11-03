@@ -1,0 +1,10 @@
+<!-- templates/query_llama.html -->
+<form method="post">
+    {% csrf_token %}
+    <label for="prompt">Consulta:</label>
+    <textarea name="prompt" id="prompt"></textarea>
+    <button type="submit">Consultar</button>
+</form>
+{% if response %}
+<p>Respuesta: {{ response }}</p>
+{% endif %}
