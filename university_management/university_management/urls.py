@@ -24,8 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Home
-    path('', views.home, name='root_empty'),
-    path('/', views.home, name='home'),
+    path('', views.home, name='home'),
 
     path('register/', views.register_student, name='register_student'),
     path('students/', views.student_list, name='student_list'),
@@ -40,5 +39,8 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    # Chat
+    path('chat/', views.chat_view, name='chat'),
 ]
 

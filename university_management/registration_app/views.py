@@ -11,6 +11,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 # login_hug("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")
@@ -94,3 +97,24 @@ def login_view(request):
 @login_required
 def home(request):
     return render(request, 'home.html')
+
+
+def chat_view(request):
+    if request.method == 'POST':
+        # Get the message from the POST request
+        try:
+            data = json.loads(request.body)
+            message = data.get('message', '')
+
+            if not message:
+                return JsonResponse({'error': 'No message provided'}, status=400)
+
+            # You can process the message here (e.g., use a chatbot API like OpenAI or a custom response)
+            response_message = f"Received your message: {message}"
+
+            return JsonResponse({'response': response_message})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)

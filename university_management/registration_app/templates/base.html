@@ -58,7 +58,7 @@
         }
 
         .sidebar li:hover {
-            background-color: #004d40;
+            background-color: #0056b3;
         }
 
         .sidebar a {
@@ -135,6 +135,7 @@
 <body>
 <!-- Button to open/close the menu in small screens -->
 <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
 <!-- Side menu -->
 <nav class="sidebar">
@@ -142,10 +143,24 @@
     <ul>
         <li><a href="{% url 'home' %}">Home</a></li>
         <li onclick="toggleSubmenu(event)">
-            Student Management
+            Students
             <ul class="submenu">
+                <li><a href="#">List Students</a></li>
                 <li><a href="#">Create Student</a></li>
-                <li><a href="#">Modify Student</a></li>
+            </ul>
+        </li>
+        <li onclick="toggleSubmenu(event)">
+            Courses
+            <ul class="submenu">
+                <li><a href="#">List Courses</a></li>
+                <li><a href="#">Create Course</a></li>
+            </ul>
+        </li>
+        <li onclick="toggleSubmenu(event)">
+            Titles
+            <ul class="submenu">
+                <li><a href="#">List Titles</a></li>
+                <li><a href="#">Create Title</a></li>
             </ul>
         </li>
         <li><a href="#">Settings</a></li>
