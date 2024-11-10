@@ -128,4 +128,6 @@ EMAIL_HOST_USER = 'tu_email@example.com'
 EMAIL_HOST_PASSWORD = 'tu_contraseña'
 DEFAULT_FROM_EMAIL = 'nombre_del_remitente <tu_email@example.com>'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_URL = '/login/'

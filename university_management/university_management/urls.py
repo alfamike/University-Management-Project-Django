@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Home
-    #path('/', views.HomeView.as_view(), name='home'),
+    path('', views.home, name='root_empty'),
+    path('/', views.home, name='home'),
 
     path('register/', views.register_student, name='register_student'),
     path('students/', views.student_list, name='student_list'),
@@ -32,6 +33,7 @@ urlpatterns = [
 
     # Login
     path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # Reset password
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
