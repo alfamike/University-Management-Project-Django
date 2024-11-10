@@ -1,0 +1,186 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <style>
+        /* General style */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #337ab7;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Main container style */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Side menu style */
+        .sidebar {
+            background-color: #337ab7;
+            color: white;
+            width: 250px;
+            min-height: 100vh;
+            padding-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin: 0;
+            font-size: 1.5rem;
+            color: #FFFFFF;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 2rem;
+        }
+
+        .sidebar li {
+            padding: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar li:hover {
+            background-color: #004d40;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Submenu */
+        .submenu {
+            display: none;
+            margin-left: 1rem;
+        }
+
+        .sidebar li.active .submenu {
+            display: block;
+        }
+
+        /* Logout button */
+        .sidebar .logout-btn {
+            background-color: #337ab7;
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer;
+        }
+
+        .sidebar .logout-btn a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            flex: 1;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Responsive style */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+                position: fixed;
+                z-index: 10;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+                padding-top: 3rem;
+            }
+
+            /* Menu button for mobile */
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                background-color: #00796b;
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                font-size: 1.2rem;
+                cursor: pointer;
+                z-index: 15;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Button to open/close the menu in small screens -->
+<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+<!-- Side menu -->
+<nav class="sidebar">
+    <h2>University Management</h2>
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li onclick="toggleSubmenu(event)">
+            Student Management
+            <ul class="submenu">
+                <li><a href="#">Create Student</a></li>
+                <li><a href="#">Modify Student</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Settings</a></li>
+        <li class="logout-btn">
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit"
+                        style="background: none; border: none; padding: 0; color: inherit; font: inherit; cursor: pointer;">
+                    Logout
+                </button>
+            </form>
+        </li>
+
+
+    </ul>
+</nav>
+<!-- Main Content -->
+<div class="main-container">
+    <div class="content">
+        {% block content %}
+        <!-- Page specific content goes here -->
+        {% endblock %}
+    </div>
+</div>
+
+<script>
+    // Function to change the side menu in mobile devices
+    function toggleMenu() {
+        document.querySelector('.sidebar').classList.toggle('open');
+    }
+
+    // Function to change the submenu visualization
+    function toggleSubmenu(event) {
+        event.currentTarget.classList.toggle('active');
+    }
+</script>
+</body>
+</html>
