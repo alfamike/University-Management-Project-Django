@@ -68,6 +68,7 @@ def update_activity(activity_id, new_name, new_description, new_due_date):
 
     return response
 
+
 def get_all_activities():
     fabric_client = get_fabric_client()
 

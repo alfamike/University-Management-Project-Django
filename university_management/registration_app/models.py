@@ -1,6 +1,8 @@
 from django.db import models
 import uuid
-import services_fabric
+
+from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
+    services_student_activity_grade
 
 
 class Title(models.Model):
@@ -18,7 +20,7 @@ class Title(models.Model):
 
     def save_to_fabric(self):
         # Llamada al servicio de Fabric para guardar el Title
-        response = services_fabric.services_title.create_title({
+        response = services_title.create_title({
             'id': str(self.id),
             'name': self.name,
             'description': self.description or ''
@@ -51,7 +53,7 @@ class Course(models.Model):
 
     def save_to_fabric(self):
         # Llamada al servicio de Fabric para guardar el Course
-        response = services_fabric.services_course.create_course({
+        response = services_course.create_course({
             'id': str(self.id),
             'title_id': str(self.title.primary_key),
             'name': self.name,
@@ -86,7 +88,7 @@ class Student(models.Model):
 
     def save_to_fabric(self):
         # Llamada al servicio de Fabric para guardar el Student
-        response = services_fabric.services_student.create_student({
+        response = services_student.create_student({
             'id': str(self.id),
             'first_name': self.first_name,
             'last_name': self.last_name,
@@ -119,7 +121,7 @@ class Activity(models.Model):
 
     def save_to_fabric(self):
         # Llamada al servicio de Fabric para guardar la Activity
-        response = services_fabric.services_activity.create_activity({
+        response = services_activity.create_activity({
             'id': str(self.id),
             'course_id': str(self.course.primary_key),
             'name': self.name,
@@ -155,7 +157,7 @@ class StudentActivityGrade(models.Model):
 
     def save_to_fabric(self):
         # Llamada al servicio de Fabric para guardar el StudentActivityGrade
-        response = services_fabric.services_student_activity_grade.create_student_activity_grade({
+        response = services_student_activity_grade.create_student_activity_grade({
             'id': str(self.id),
             'student_id': str(self.student.primary_key),
             'activity_id': str(self.activity.primary_key),

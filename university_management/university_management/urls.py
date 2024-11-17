@@ -26,10 +26,6 @@ urlpatterns = [
     # Home
     path('', views.home, name='home'),
 
-    path('register/', views.register_student, name='register_student'),
-    path('students/', views.student_list, name='student_list'),
-    path('students/<str:student_id>/', views.get_student_record, name='get_student_record'),
-
     # Login
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
