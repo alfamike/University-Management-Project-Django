@@ -1,3 +1,4 @@
+<!-- home.html -->
 {% extends 'base.html' %}
 
 {% block title %}Home{% endblock %}
@@ -8,16 +9,17 @@
 
 <!-- Chatbot UI -->
 <div class="chatbox">
-    <div class="chat-container" id="chat-container" aria-live="polite">
+    <div aria-live="polite" class="chat-container" id="chat-container">
         <!-- Chat messages will appear here -->
     </div>
-    <input id="user-input" placeholder="Type a message..." type="text"/>
-    <button id="send-btn">Send</button>
+    <div class="chat-input-container">
+        <textarea id="user-input" onkeypress="handleKeyPress(event)" placeholder="Type a message..." ></textarea>
+        <span class="send-icon" onclick="sendMessage()">&#x27A4;</span>
+    </div>
 </div>
 
 <script>
     // Get DOM elements
-    const sendButton = document.getElementById('send-btn');
     const userInput = document.getElementById('user-input');
     const chatContainer = document.getElementById('chat-container');
 
@@ -51,28 +53,23 @@
             scrollToBottom();
         })
         .catch(error => {
-    console.error('Error:', error);
-    chatContainer.innerHTML += `<div class="bot-message">Sorry, there was an issue processing your message. Please try again later.</div>`;
-    scrollToBottom();
-});
-
+            console.error('Error:', error);
+            chatContainer.innerHTML += `<div class="bot-message">Sorry, there was an issue processing your message. Please try again later.</div>`;
+            scrollToBottom();
+        });
     }
 
-    // Attach event listener to send button
-    sendButton.addEventListener('click', sendMessage);
-
-    // Optionally, allow pressing "Enter" to send the message
-    userInput.addEventListener('keypress', function(event) {
+    // Handle Enter key press to send message
+    function handleKeyPress(event) {
         if (event.key === 'Enter') {
             sendMessage();
         }
-    });
+    }
 
     // Scroll to the bottom of the chat container
-function scrollToBottom() {
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 </script>
 
 <style>
@@ -81,8 +78,8 @@ function scrollToBottom() {
         position: fixed;
         bottom: 20px;
         left: 250px;
-        width: calc(80% - 250px); /* Adjust width based on sidebar */
-        max-width: calc(100% - 250px); /* Max width */
+        width: calc(80% - 250px);
+        max-width: calc(100% - 250px);
         padding: 20px;
         border-radius: 8px;
         background-color: #ffffff;
@@ -113,40 +110,44 @@ function scrollToBottom() {
     .user-message {
         background-color: #d1e7ff;
         align-self: flex-start;
+        word-wrap: break-word;
+        word-break: break-word;
     }
 
     .bot-message {
         background-color: #e1f7d5;
         align-self: flex-end;
+        word-wrap: break-word;
+        word-break: break-word;
     }
 
-    /* Chat input and send button styles */
     .chat-input-container {
         display: flex;
         align-items: center;
         width: 100%;
-        margin-top: 10px;
+        position: relative;
     }
 
     #user-input {
+        width: 100%;
+        box-sizing: border-box;
         padding: 10px;
         border-radius: 5px;
         border: 1px solid #ccc;
-        margin-right: 10px;
     }
 
-    #send-btn {
-        padding: 10px;
-        border: none;
-        background-color: #337ab7;
-        color: white;
-        border-radius: 5px;
+    .send-icon {
+        position: absolute;
+        right: 10px;
         cursor: pointer;
-        white-space: nowrap;
+        font-size: 1.2rem;
+        color: #337ab7;
+        background: none;
+        border: none;
     }
 
-    #send-btn:hover {
-        background-color: #0056b3;
+    .send-icon:hover {
+        color: #0056b3;
     }
 
     @keyframes fadeIn {
@@ -154,26 +155,17 @@ function scrollToBottom() {
         100% { opacity: 1; }
     }
 
-    /* Ensuring page content has space for the chatbox */
-    .main-content {
-        padding-bottom: 100px; /* Add space at the bottom for chatbox */
-    }
-
     /* Mobile view adjustments */
     @media (max-width: 768px) {
         .chatbox {
-            left: 0;  /* Adjust for smaller screens */
-            width: 100%; /* Full width on mobile */
+            left: 0;
+            width: 100%;
             max-width: 100%;
-            padding: 15px;
+            padding: 10px;
         }
 
         #user-input {
-            width: 60%; /* Input width for mobile */
-        }
-
-        #send-btn {
-            width: 30%; /* Adjust button width for mobile */
+            width: calc(100% - 40px);
         }
     }
 </style>
