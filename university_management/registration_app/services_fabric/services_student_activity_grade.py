@@ -67,7 +67,7 @@ def update_student_activity_grade(student_id, activity_id, new_grade):
     return response
 
 
-def get_all_student_activity_grades():
+def get_all_student_activity_grades(student_id):
     fabric_client = get_fabric_client()
 
     # Cargar el canal y la identidad del usuario
@@ -80,8 +80,7 @@ def get_all_student_activity_grades():
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='GetAllStudentActivityGrades',  # Función en el Chaincode
-        args=[]  # No es necesario pasar parámetros
+        args=[student_id]
     )
 
-    # Retornar la respuesta (debe ser una lista de calificaciones de actividades en formato JSON o similar)
     return response
