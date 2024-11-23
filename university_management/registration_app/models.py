@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 
 from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
-    services_student_activity_grade
+    services_student_activity_grade, services_student_course_grade
 
 
 class Title(models.Model):
@@ -170,4 +170,39 @@ class StudentActivityGrade(models.Model):
 
     def delete(self, *args, **kwargs):
         self.is_deleted = True  # Marca como eliminado
+        self.save()
+
+
+class StudentCourseGrade(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    student = models.ForeignKey(Student, related_name='course_grades', on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, related_name='student_grades', on_delete=models.CASCADE)
+    grade = models.DecimalField(max_digits=5, decimal_places=2, blank=True,
+                                null=True)  # Allow grades to be optional initially
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('student', 'course')
+
+    def __str__(self):
+        return f"{self.student} - {self.course}: {self.grade}"
+
+    def save(self, *args, **kwargs):
+        # Save to blockchain
+        self.save_to_fabric()
+
+    def save_to_fabric(self):
+        # Call to the Fabric service to save the StudentCourseGrade
+        response = services_student_course_grade.create_student_course_grade({
+            'id': str(self.id),
+            'student_id': str(self.student.primary_key),
+            'course_id': str(self.course.primary_key),
+            'grade': str(self.grade) if self.grade is not None else None,
+        })
+
+        if response['status'] != '200':
+            print(f"Error saving the course grade in the blockchain: {response}")
+
+    def delete(self, *args, **kwargs):
+        self.is_deleted = True  # Mark as deleted
         self.save()
