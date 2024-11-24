@@ -8,12 +8,10 @@ def create_student_activity_grade(grade_data):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Preparar los argumentos para invocar el Chaincode
     student_id = grade_data['student_id']
     activity_id = grade_data['activity_id']
     grade = grade_data['grade']
 
-    # Invocar la función 'CreateStudentActivityGrade' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -34,7 +32,6 @@ def query_student_activity_grade(student_id, activity_id):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener una StudentActivityGrade
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
@@ -53,7 +50,6 @@ def update_student_activity_grade(student_id, activity_id, new_grade):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Invocar la función 'UpdateStudentActivityGrade' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -74,7 +70,6 @@ def get_all_student_activity_grades(student_id):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener todas las calificaciones de actividades
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',

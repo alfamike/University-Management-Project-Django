@@ -9,7 +9,6 @@ def create_course(course_data):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Preparar los argumentos para invocar el Chaincode
     course_id = course_data['id']
     title_id = course_data['title_id']
     name = course_data['name']
@@ -17,7 +16,6 @@ def create_course(course_data):
     start_date = course_data['start_date']
     end_date = course_data['end_date']
 
-    # Invocar la función 'CreateCourse' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -38,7 +36,6 @@ def query_course(course_id):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener un curso
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
@@ -57,7 +54,6 @@ def update_course(course_id, new_title_id, new_name, new_description, new_start_
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Invocar la función 'UpdateCourse' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -78,16 +74,14 @@ def get_all_courses():
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener todos los cursos
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='GetAllCourses',  # Función en el Chaincode
-        args=[]  # No es necesario pasar parámetros
+        args=[]
     )
 
-    # Retornar la respuesta (debe ser una lista de cursos en formato JSON o similar)
     return response
 
 
@@ -98,7 +92,6 @@ def get_courses_by_title(title_id):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener todos los cursos
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',

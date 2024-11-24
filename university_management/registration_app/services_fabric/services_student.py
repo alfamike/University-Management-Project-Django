@@ -8,13 +8,11 @@ def create_student(student_data):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Preparar los argumentos para invocar el Chaincode
     student_id = student_data['id']
     first_name = student_data['first_name']
     last_name = student_data['last_name']
     email = student_data['email']
 
-    # Invocar la función 'CreateStudent' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -35,7 +33,6 @@ def query_student(student_id):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener un Student
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
@@ -54,7 +51,6 @@ def update_student(student_id, new_first_name, new_last_name, new_email):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Invocar la función 'UpdateStudent' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -67,6 +63,7 @@ def update_student(student_id, new_first_name, new_last_name, new_email):
 
     return response
 
+
 def get_all_students():
     fabric_client = get_fabric_client()
 
@@ -74,7 +71,6 @@ def get_all_students():
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener todos los estudiantes
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
@@ -83,5 +79,4 @@ def get_all_students():
         args=[]  # No es necesario pasar parámetros
     )
 
-    # Retornar la respuesta (debe ser una lista de estudiantes en formato JSON o similar)
     return response

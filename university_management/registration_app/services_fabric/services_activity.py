@@ -55,7 +55,6 @@ def update_activity(activity_id, new_name, new_description, new_due_date):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Invocar la función 'UpdateActivity' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -76,7 +75,6 @@ def get_all_activities():
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener todas las actividades
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
@@ -85,5 +83,4 @@ def get_all_activities():
         args=[]  # No es necesario pasar parámetros
     )
 
-    # Retornar la respuesta (debe ser una lista de actividades en formato JSON o similar)
     return response

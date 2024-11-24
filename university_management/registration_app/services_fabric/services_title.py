@@ -8,12 +8,10 @@ def create_title(title_data):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Preparar los argumentos para invocar el Chaincode
     title_id = title_data['id']
     name = title_data['name']
     description = title_data['description']
 
-    # Invocar la función 'CreateTitle' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -34,7 +32,6 @@ def query_title(title_id):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener un Title
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
@@ -53,7 +50,6 @@ def update_title(title_id, new_name, new_description):
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Invocar la función 'UpdateTitle' del Chaincode
     response = channel.chaincode_invoke(
         requestor=admin_user,
         channel_name='mychannel',
@@ -74,14 +70,12 @@ def get_all_titles():
     channel = fabric_client.get_channel('mychannel')
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
-    # Consultar el Chaincode para obtener todos los títulos
     response = channel.chaincode_query(
         requestor=admin_user,
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='GetAllTitles',  # Función en el Chaincode
-        args=[]  # No es necesario pasar parámetros
+        args=[]
     )
 
-    # Retornar la respuesta (debe ser una lista de títulos en formato JSON o similar)
     return response
