@@ -1,5 +1,6 @@
-from hfc.fabric import Client
 import os
+
+from hfc.fabric import Client
 
 
 def get_fabric_client():
