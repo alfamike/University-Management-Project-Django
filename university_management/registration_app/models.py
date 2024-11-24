@@ -127,7 +127,7 @@ class Student(models.Model):
             )
 
         if response['status'] != '200':
-            print(f"Error saving the student in the blockchain: {response}")
+            print(f"Error saving the students in the blockchain: {response}")
 
     def delete(self, *args, **kwargs):
         self.is_deleted = True
@@ -188,7 +188,9 @@ class StudentActivityGrade(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('student', 'activity')
+        constraints = [
+            models.UniqueConstraint(fields=['student', 'activity'], name='unique_student_activity')
+        ]
 
     def __str__(self):
         return f"{self.student} - {self.activity}: {self.grade}"
@@ -233,7 +235,9 @@ class StudentCourseGrade(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('student', 'course')
+        constraints = [
+            models.UniqueConstraint(fields=['student', 'course'], name='unique_student_course')
+        ]
 
     def __str__(self):
         return f"{self.student} - {self.course}: {self.grade}"
