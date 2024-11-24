@@ -1,4 +1,3 @@
-from registration_app.models import Title, Course
 from registration_app.services_fabric.services_fabric import get_fabric_client
 
 

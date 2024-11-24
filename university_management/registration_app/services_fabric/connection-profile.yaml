@@ -1,0 +1,30 @@
+name: fabric-network
+version: 1.0.0
+client:
+  organization: Org1
+  credentials:
+    certificate: /path/to/certificate.pem
+    private_key: /path/to/private_key.pem
+  connection:
+    timeout: 60
+
+channels:
+  mychannel:
+    orderers:
+      - orderer.example.com:7050
+    peers:
+      - peer0.org1.example.com:7051
+
+organizations:
+  Org1:
+    mspid: Org1MSP
+    peers:
+      - peer0.org1.example.com
+
+orderers:
+  orderer.example.com:
+    url: grpc://localhost:7050
+
+peers:
+  peer0.org1.example.com:
+    url: grpc://localhost:7051
