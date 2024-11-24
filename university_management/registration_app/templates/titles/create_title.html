@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Title{% endblock %}
+
+{% block content %}
+{% load custom_filters %}
+
+<h1>Create Title</h1>
+<p>Fill out the form below to register a new title in the system.</p>
+
+<div class="form-container">
+    <form class="modern-form" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name|add_class:"form-control" }}
+            <small class="form-hint">Enter the title name.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description|add_class:"form-control" }}
+            <small class="form-hint">Enter the title's description.</small>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Create Title</button>
+        </div>
+    </form>
+</div>
+
+
+<style>
+
+</style>
+
+{% endblock %}

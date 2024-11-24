@@ -38,5 +38,16 @@ urlpatterns = [
 
     # Chat
     path('chat/', views.chat_view, name='chat'),
-]
 
+    # Student
+    path('createStudent/', views.create_student, name='create_student'),
+    # path('students/', views.student_list, name='student_list'),
+
+    # Course
+    path('createCourse/', views.create_course, name='create_course'),
+    # path('courses/', views.course_list, name='course_list'),
+
+    # Title
+    path('createTitle/', views.create_title, name='create_title'),
+    # path('titles/', views.titles_list, name='title_list'),
+]

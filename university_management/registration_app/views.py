@@ -1,6 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Student
+
+from .forms.form_course import CourseForm
+from .forms.form_student import StudentForm
+from .forms.form_title import TitleForm
+from .models import Student, Title
 import requests
 from langchain_core.prompts import PromptTemplate
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
@@ -14,6 +18,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
+from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
+    services_student_activity_grade, services_student_course_grade
 
 
 # login_hug("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")
@@ -84,3 +90,39 @@ def chat_view(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def create_student(request):
+    if request.method == 'POST':
+        form = StudentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('student_list')
+    else:
+        form = StudentForm()
+
+    return render(request, 'students/create_student.html', {'form': form})
+
+
+def create_course(request):
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('course_list')
+    else:
+        form = CourseForm()
+
+    return render(request, 'courses/create_course.html', {'form': form})
+
+
+def create_title(request):
+    if request.method == 'POST':
+        form = TitleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('title_list')
+    else:
+        form = TitleForm()
+
+    return render(request, 'titles/create_title.html', {'form': form})

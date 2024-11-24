@@ -130,6 +130,60 @@
                 z-index: 15;
             }
         }
+
+            .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-form .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .modern-form label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #337ab7;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    .form-hint {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .form-actions {
+        text-align: center;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        background-color: #337ab7;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
     </style>
 </head>
 <body>
@@ -146,21 +200,21 @@
             Students
             <ul class="submenu">
                 <li><a href="#">List Students</a></li>
-                <li><a href="#">Create Student</a></li>
+                <li><a href="{% url 'create_student' %}">Create Student</a></li>
             </ul>
         </li>
         <li onclick="toggleSubmenu(event)">
             Courses
             <ul class="submenu">
                 <li><a href="#">List Courses</a></li>
-                <li><a href="#">Create Course</a></li>
+                <li><a href="{% url 'create_course' %}">Create Course</a></li>
             </ul>
         </li>
         <li onclick="toggleSubmenu(event)">
             Titles
             <ul class="submenu">
                 <li><a href="#">List Titles</a></li>
-                <li><a href="#">Create Title</a></li>
+                <li><a href="{% url 'create_title' %}">Create Title</a></li>
             </ul>
         </li>
         <li><a href="#">Settings</a></li>
