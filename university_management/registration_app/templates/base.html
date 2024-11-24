@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>{% block title %}{% endblock %}</title>
     <style>
         /* General style */
@@ -184,12 +184,167 @@
     .btn:hover {
         background-color: #0056b3;
     }
+
+    /* Page Title */
+    .page-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    /* Filters */
+    .filters-container {
+        margin-bottom: 20px;
+    }
+
+    .filters-form {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .filter {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter label {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .filter-dropdown {
+        padding: 8px;
+        font-size: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 150px;
+    }
+
+    .btn-filter {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-filter:hover {
+        background-color: #0056b3;
+    }
+
+    /* Table */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        display: table;
+    }
+
+    .table th, .table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .table th {
+        background-color: #f4f4f4;
+    }
+
+    .table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination {
+        display: inline-block;
+    }
+
+    .btn-page {
+        padding: 8px 15px;
+        margin: 0 5px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .btn-page:hover {
+        background-color: #0056b3;
+    }
+
+    .current-page {
+        margin: 0 10px;
+        font-weight: bold;
+    }
+
+    /* Hide Cards and Show Table by Default */
+    .card-list {
+        display: none;
+    }
+
+    /* Show Cards on Small Screens */
+    @media (max-width: 768px) {
+        .table {
+            display: none;
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+
+    /* Card Styles */
+    .card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .card-email {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .no-students {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #888;
+        margin-top: 20px;
+    }
+
     </style>
 </head>
 <body>
 <!-- Button to open/close the menu in small screens -->
 <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+<input name="csrfmiddlewaretoken" type="hidden" value="{{ csrf_token }}">
 
 <!-- Side menu -->
 <nav class="sidebar">
@@ -199,7 +354,7 @@
         <li onclick="toggleSubmenu(event)">
             Students
             <ul class="submenu">
-                <li><a href="#">List Students</a></li>
+                <li><a href="{% url 'student_list' %}">List Students</a></li>
                 <li><a href="{% url 'create_student' %}">Create Student</a></li>
             </ul>
         </li>
@@ -219,10 +374,10 @@
         </li>
         <li><a href="#">Settings</a></li>
         <li class="logout-btn">
-            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            <form action="{% url 'logout' %}" id="logout-form" method="post" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit"
-                        style="background: none; border: none; padding: 0; color: inherit; font: inherit; cursor: pointer;">
+                <button style="background: none; border: none; padding: 0; color: inherit; font: inherit; cursor: pointer;"
+                        type="submit">
                     Logout
                 </button>
             </form>

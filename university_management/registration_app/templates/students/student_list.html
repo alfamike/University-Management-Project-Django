@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Students List{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Students List</h1>
+
+<!-- Filters Section -->
+<div class="filters-container">
+    <form id="filter-form" class="filters-form">
+        <div class="filter">
+            <label for="title">Title:</label>
+            <select id="title" name="title" class="filter-dropdown">
+<!--                <option value="">All Titles</option>-->
+                {% for title in titles %}
+                    <option value="{{ title.id }}" {% if title.id == title_filter %}selected{% endif %}>{{ title.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter">
+            <label for="course">Course:</label>
+            <select id="course" name="course" class="filter-dropdown">
+<!--                <option value="">All Courses</option>-->
+                {% for course in courses %}
+                    <option value="{{ course.id }}" {% if course.id == course_filter %}selected{% endif %}>{{ course.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn-filter">Filter</button>
+    </form>
+</div>
+
+<!-- Table of Students -->
+<div class="students-list">
+    <!-- Table for Desktop View -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="student-list">
+            {% for student in page_obj %}
+                <tr>
+                    <td>{{ student.first_name }} {{ student.last_name }}</td>
+                    <td>{{ student.email }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No students found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Cards for Mobile View -->
+    <div class="card-list">
+        {% for student in page_obj %}
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">{{ student.first_name }} {{ student.last_name }}</h3>
+                    <p class="card-email">{{ student.email }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-students">No students found.</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- Pagination -->
+<div class="pagination-container">
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1&title={{ title_filter }}&course={{ course_filter }}" class="btn-page">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}&title={{ title_filter }}&course={{ course_filter }}" class="btn-page">Previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&title={{ title_filter }}&course={{ course_filter }}" class="btn-page">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&title={{ title_filter }}&course={{ course_filter }}" class="btn-page">Last</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Handle filter form submission with AJAX
+    document.getElementById('filter-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const titleFilter = document.getElementById('title').value;
+        const courseFilter = document.getElementById('course').value;
+
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Update the URL to reflect filter parameters
+        const url = new URL(window.location.href);
+        url.searchParams.set('title', titleFilter);
+        url.searchParams.set('course', courseFilter);
+
+        // Fetch the filtered students data via AJAX
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const studentList = document.getElementById('student-list');
+            studentList.innerHTML = '';
+
+            data.students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.first_name} ${student.last_name}</td>
+                    <td>${student.email}</td>
+                `;
+                studentList.appendChild(row);
+            });
+
+            // Handle pagination logic
+            const pagination = document.querySelector('.pagination');
+            pagination.innerHTML = '';  // Clear the existing pagination
+
+            if (data.has_next || data.previous_page) {
+                const nextPageLink = document.createElement('a');
+                nextPageLink.href = `?page=${data.next_page}&title=${titleFilter}&course=${courseFilter}`;
+                nextPageLink.textContent = 'Next';
+                nextPageLink.classList.add('btn-page');
+                pagination.appendChild(nextPageLink);
+            }
+
+            if (data.previous_page) {
+                const prevPageLink = document.createElement('a');
+                prevPageLink.href = `?page=${data.previous_page}&title=${titleFilter}&course=${courseFilter}`;
+                prevPageLink.textContent = 'Previous';
+                prevPageLink.classList.add('btn-page');
+                pagination.appendChild(prevPageLink);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+
+{% endblock %}

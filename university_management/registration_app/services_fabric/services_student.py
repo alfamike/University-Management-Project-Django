@@ -80,3 +80,39 @@ def get_all_students():
     )
 
     return response
+
+
+def get_students_by_title(title_id):
+    fabric_client = get_fabric_client()
+
+    # Cargar el canal y la identidad del usuario
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_query(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',  # Nombre de tu Chaincode
+        fcn='GetStudentsByTitle',  # Función en el Chaincode
+        args=[title_id]
+    )
+
+    return response
+
+
+def get_students_by_course(course_id):
+    fabric_client = get_fabric_client()
+
+    # Cargar el canal y la identidad del usuario
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_query(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',  # Nombre de tu Chaincode
+        fcn='GetStudentsByCourse',  # Función en el Chaincode
+        args=[course_id]
+    )
+
+    return response

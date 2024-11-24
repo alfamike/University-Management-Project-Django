@@ -1,25 +1,18 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
+import json
 
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.shortcuts import render
+
+from registration_app.services_fabric import services_student
 from .forms.form_course import CourseForm
 from .forms.form_student import StudentForm
 from .forms.form_title import TitleForm
-from .models import Student, Title
-import requests
-from langchain_core.prompts import PromptTemplate
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from huggingface_hub import login as login_hug
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.http import JsonResponse
-from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
-    services_student_activity_grade, services_student_course_grade
 
 
 # login_hug("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")
@@ -126,3 +119,137 @@ def create_title(request):
         form = TitleForm()
 
     return render(request, 'titles/create_title.html', {'form': form})
+
+
+def student_list(request):
+    # Filters
+    title_filter = request.GET.get('title', None)
+    course_filter = request.GET.get('course', None)
+
+    # Prepare the students list
+    # TODO
+    # students = services_student.get_all_students()
+    students = [
+        {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john.doe@example.com"
+        },
+        {
+            "first_name": "Jane",
+            "last_name": "Smith",
+            "email": "jane.smith@example.com"
+        },
+        {
+            "first_name": "Robert",
+            "last_name": "Johnson",
+            "email": "robert.johnson@example.com"
+        },
+        {
+            "first_name": "Emily",
+            "last_name": "Davis",
+            "email": "emily.davis@example.com"
+        },
+        {
+            "first_name": "Michael",
+            "last_name": "Brown",
+            "email": "michael.brown@example.com"
+        },
+        {
+            "first_name": "Sarah",
+            "last_name": "Wilson",
+            "email": "sarah.wilson@example.com"
+        },
+        {
+            "first_name": "David",
+            "last_name": "Taylor",
+            "email": "david.taylor@example.com"
+        },
+        {
+            "first_name": "Olivia",
+            "last_name": "Anderson",
+            "email": "olivia.anderson@example.com"
+        },
+        {
+            "first_name": "Daniel",
+            "last_name": "Thomas",
+            "email": "daniel.thomas@example.com"
+        },
+        {
+            "first_name": "Sophia",
+            "last_name": "Moore",
+            "email": "sophia.moore@example.com"
+        }
+    ]
+
+    # Filter by title if provided
+    if title_filter:
+        students = services_student.get_students_by_title(title_filter)
+
+    # Filter by course if provided
+    if course_filter:
+        students = services_student.get_students_by_course(course_filter)
+
+    # Pagination setup
+    paginator = Paginator(students, 5)  # 25 students per page
+    page_number = request.GET.get('page', 1)  # Default to page 1 if no page param
+    try:
+        page_obj = paginator.get_page(page_number)
+    except Exception as e:
+        print(f"Error while getting page: {e}")
+        page_obj = paginator.get_page(1)  # Default to first page if there's an issue
+
+    # Get filters for titles and courses
+    # TODO
+    # titles = services_title.get_all_titles()
+    titles = [
+        {"id": 1, "name": "Blockchain"},
+        {"id": 2, "name": "Programación Lógica"},
+        {"id": 3, "name": "Robótica"},
+        {"id": 4, "name": "Ética"}
+    ]
+
+    # Todo
+    # courses = services_course.get_all_courses()
+    courses = [
+        {"id": 1, "name": "Introduction to Programming",
+         "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
+         "end_date": "2024-05-10"},
+        {"id": 2, "name": "Advanced Web Development",
+         "description": "Explore advanced concepts in web development with Django and React.",
+         "start_date": "2024-02-15", "end_date": "2024-06-30"},
+        {"id": 3, "name": "Database Management Systems",
+         "description": "Understand the design, implementation, and management of database systems.",
+         "start_date": "2024-03-01", "end_date": "2024-07-15"},
+        {"id": 4, "name": "Machine Learning Basics",
+         "description": "An introduction to machine learning concepts and algorithms.", "start_date": "2024-04-05",
+         "end_date": "2024-08-20"}
+    ]
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if is_ajax:
+        # Only return the filtered students' list in JSON format
+        student_data = []
+        for student in page_obj:
+            student_data.append({
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'email': student.email,
+            })
+
+        return JsonResponse({
+            'students': student_data,
+            'has_next': page_obj.has_next(),
+            'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+            'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None
+        })
+
+    # Render the normal page
+    return render(request, 'students/student_list.html', {
+        'page_obj': page_obj,
+        'titles': titles,
+        'courses': courses,
+        'title_filter': title_filter,
+        'course_filter': course_filter,
+    })
