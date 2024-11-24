@@ -1,7 +1,0 @@
-<!-- templates/student_list.html -->
-<h1>Lista de Estudiantes</h1>
-<ul>
-    {% for student in students %}
-    <li>{{ student.name }} - <a href="{% url 'get_student_record' student.student_id %}">Ver Registro</a></li>
-    {% endfor %}
-</ul>
