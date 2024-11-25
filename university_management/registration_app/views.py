@@ -123,8 +123,8 @@ def create_title(request):
 
 def student_list(request):
     # Filters
-    title_filter = request.GET.get('title')
-    course_filter = request.GET.get('course')
+    title_filter = request.GET.get('title', None)
+    course_filter = request.GET.get('course', None)
 
     # Prepare the students list
     # TODO
@@ -182,12 +182,16 @@ def student_list(request):
         }
     ]
 
+    # If invalid or empty, reset to None
+    title_filter = None if title_filter in [None, '', 'None'] else title_filter
+    course_filter = None if course_filter in [None, '', 'None'] else course_filter
+
     # Filter by title if provided
-    if title_filter != 'None':
+    if title_filter:
         students = services_student.get_students_by_title(title_filter)
 
     # Filter by course if provided
-    if course_filter != 'None':
+    if course_filter:
         students = services_student.get_students_by_course(course_filter)
 
     # Pagination setup
