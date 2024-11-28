@@ -246,14 +246,70 @@ def student_list(request):
             'students': student_data,
             'has_next': page_obj.has_next(),
             'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+            'has_previous': page_obj.has_previous(),
             'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None
         })
 
-    # Render the normal page
     return render(request, 'students/student_list.html', {
         'page_obj': page_obj,
         'titles': titles,
         'courses': courses,
         'title_filter': title_filter,
         'course_filter': course_filter,
+    })
+
+
+def title_list(request):
+    # TODO
+    # titles = services_title.get_all_titles()
+    titles = [
+        {
+            "name": "Blockchain",
+            "description": "Test",
+        },
+        {
+            "name": "Programación Lógica",
+            "description": "Test",
+        },
+        {
+            "name": "Robótica",
+            "description": "Test",
+        },
+        {
+            "name": "Ética",
+            "description": "Test",
+        }
+    ]
+
+    # Pagination setup
+    paginator = Paginator(titles, 2)  # 10 titles per page
+    page_number = request.GET.get('page', 1)  # Default to page 1 if no page param
+    try:
+        page_obj = paginator.get_page(page_number)
+    except Exception as e:
+        print(f"Error while getting page: {e}")
+        page_obj = paginator.get_page(1)  # Default to first page if there's an issue
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if is_ajax:
+        titles_data = []
+        for title in page_obj:
+            titles_data.append({
+                'name': title["name"],
+                'description': title["description"]
+            })
+
+        return JsonResponse({
+            'titles': titles_data,
+            'has_next': page_obj.has_next(),
+            'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+            'has_previous': page_obj.has_previous(),
+            'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
+            'current_page': page_obj.number,
+            'total_pages': page_obj.paginator.num_pages,
+        })
+
+    return render(request, 'titles/title_list.html', {
+        'page_obj': page_obj,
     })

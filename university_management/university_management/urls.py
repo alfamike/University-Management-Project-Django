@@ -50,5 +50,5 @@ urlpatterns = [
 
     # Title
     path('createTitle/', views.create_title, name='create_title'),
-    # path('titles/', views.titles_list, name='title_list'),
+    path('titles/', views.title_list, name='title_list'),
 ]
