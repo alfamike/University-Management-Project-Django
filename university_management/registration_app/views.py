@@ -335,6 +335,7 @@ def course_list(request):
 
     # Filters
     title_filter = request.GET.get('title', None)
+    year_filter = request.GET.get('year', None)
 
     # Get filters for titles
     # TODO
@@ -349,9 +350,12 @@ def course_list(request):
     # If invalid or empty, reset to None
     title_filter = None if title_filter in [None, '', 'None'] else title_filter
 
-    # Filter by title if provided
-    if title_filter:
-        courses = services_course.get_courses_by_title(title_filter)
+    # Filter by title and year if provided
+    if title_filter or year_filter:
+        courses = services_course.get_courses_by_title_year(title_filter, year_filter)
+
+    # Filter for years
+    years = list(range(2024, 2031))
 
     # Pagination setup
     paginator = Paginator(courses, 5)  # 5 courses per page
@@ -370,7 +374,9 @@ def course_list(request):
         for course in page_obj:
             course_data.append({
                 'name': course["name"],
-                'description': course["description"]
+                'description': course["description"],
+                'start_date': course["start_date"],
+                'end_date': course["end_date"]
             })
 
         return JsonResponse({
@@ -386,5 +392,7 @@ def course_list(request):
     return render(request, 'courses/course_list.html', {
         'page_obj': page_obj,
         'titles': titles,
+        'years': years,
         'title_filter': title_filter,
+        'year_filter': year_filter,
     })

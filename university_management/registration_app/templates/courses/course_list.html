@@ -19,6 +19,16 @@
             </select>
         </div>
 
+        <div class="filter">
+            <label for="year">Year:</label>
+            <select class="filter-dropdown" id="year" name="year">
+                <option value="">All Years</option>
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == year_filter %} selected {% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
         <button class="btn-filter" type="submit">Filter</button>
     </form>
 </div>
@@ -30,6 +40,8 @@
         <tr>
             <th>Name</th>
             <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
         </tr>
         </thead>
         <tbody id="course-list">
@@ -37,6 +49,8 @@
         <tr>
             <td>{{ course.name }}</td>
             <td>{{ course.description }}</td>
+            <td>{{ course.start_date }}</td>
+            <td>{{ course.end_date }}</td>
         </tr>
         {% empty %}
         <tr>
@@ -88,6 +102,7 @@
 
             // Get the selected title filter value
             const titleFilter = document.getElementById('title').value;
+            const yearFilter = document.getElementById('year').value;
 
             // Get CSRF token
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -95,6 +110,7 @@
             // Update the URL to reflect the filter parameters
             const url = new URL(window.location.href);
             url.searchParams.set('title', titleFilter);
+            url.searchParams.set('year', yearFilter);
 
             // Fetch the filtered courses data via AJAX
             fetch(url, {
@@ -117,6 +133,8 @@
                             row.innerHTML = `
                                 <td>${course.name}</td>
                                 <td>${course.description}</td>
+                                <td>${course.start_date}</td>
+                                <td>${course.end_date}</td>
                             `;
                             courseList.appendChild(row);
                         });
@@ -207,6 +225,8 @@
                                 row.innerHTML = `
                                     <td>${course.name}</td>
                                     <td>${course.description}</td>
+                                    <td>${course.start_date}</td>
+                                    <td>${course.end_date}</td>
                                 `;
                                 courseList.appendChild(row);
                             });

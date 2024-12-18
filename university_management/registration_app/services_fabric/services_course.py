@@ -84,7 +84,7 @@ def get_all_courses():
     return response
 
 
-def get_courses_by_title(title_id):
+def get_courses_by_title_year(title_id, year):
     fabric_client = get_fabric_client()
 
     # Cargar el canal y la identidad del usuario
@@ -96,7 +96,7 @@ def get_courses_by_title(title_id):
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='GetCoursesByTitle',  # Función en el Chaincode
-        args=[title_id]
+        args=[title_id, year]
     )
 
     return response
