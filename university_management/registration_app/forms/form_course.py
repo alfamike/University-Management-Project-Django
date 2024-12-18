@@ -1,12 +1,19 @@
 from django import forms
 
 from registration_app.models import Course
+from registration_app.services_fabric import services_title
 
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['name', 'description', 'start_date', 'end_date']
+        fields = ['title', 'name', 'description', 'start_date', 'end_date']
+
+    # title = forms.ModelChoiceField(
+    #     queryset=services_title.get_all_titles_queryset(),
+    #     widget=forms.Select(attrs={'class': 'form-control'}),
+    #     empty_label="Select a Title"
+    # )
 
     start_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
