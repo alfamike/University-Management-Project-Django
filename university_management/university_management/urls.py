@@ -43,6 +43,7 @@ urlpatterns = [
     # Student
     path('createStudent/', views.create_student, name='create_student'),
     path('students/', views.student_list, name='student_list'),
+    path('students/<int:pk>/', views.student_record, name='student_record'),
 
     # Course
     path('createCourse/', views.create_course, name='create_course'),

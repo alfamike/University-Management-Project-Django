@@ -13,6 +13,7 @@ from registration_app.services_fabric import services_student, services_course
 from .forms.form_course import CourseForm
 from .forms.form_student import StudentForm
 from .forms.form_title import TitleForm
+from .models import Student, Course
 
 
 # login_hug("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")
@@ -131,51 +132,61 @@ def student_list(request):
     # students = services_student.get_all_students()
     students = [
         {
+            "id": 1,
             "first_name": "John",
             "last_name": "Doe",
             "email": "john.doe@example.com"
         },
         {
+            "id": 2,
             "first_name": "Jane",
             "last_name": "Smith",
             "email": "jane.smith@example.com"
         },
         {
+            "id": 3,
             "first_name": "Robert",
             "last_name": "Johnson",
             "email": "robert.johnson@example.com"
         },
         {
+            "id": 4,
             "first_name": "Emily",
             "last_name": "Davis",
             "email": "emily.davis@example.com"
         },
         {
+            "id": 5,
             "first_name": "Michael",
             "last_name": "Brown",
             "email": "michael.brown@example.com"
         },
         {
+            "id": 6,
             "first_name": "Sarah",
             "last_name": "Wilson",
             "email": "sarah.wilson@example.com"
         },
         {
+            "id": 7,
             "first_name": "David",
             "last_name": "Taylor",
             "email": "david.taylor@example.com"
         },
         {
+            "id": 8,
             "first_name": "Olivia",
             "last_name": "Anderson",
             "email": "olivia.anderson@example.com"
         },
         {
+            "id": 9,
             "first_name": "Daniel",
             "last_name": "Thomas",
             "email": "daniel.thomas@example.com"
         },
         {
+            "id": 10,
             "first_name": "Sophia",
             "last_name": "Moore",
             "email": "sophia.moore@example.com"
@@ -237,6 +248,7 @@ def student_list(request):
         student_data = []
         for student in page_obj:
             student_data.append({
+                'id': student.id,
                 'first_name': student.first_name,
                 'last_name': student.last_name,
                 'email': student.email,
@@ -396,3 +408,18 @@ def course_list(request):
         'title_filter': title_filter,
         'year_filter': year_filter,
     })
+
+
+def student_record(request, pk):
+    student = {
+        'id': 5, 'first_name': 'Michael', 'last_name': 'Brown', 'email': 'michael.brown@example.com', 'courses': [
+            {"id": 1, "name": "Introduction to Programming",
+             "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
+             "end_date": "2024-05-10"},
+            {"id": 2, "name": "Advanced Web Development",
+             "description": "Explore advanced concepts in web development with Django and React.",
+             "start_date": "2024-02-15", "end_date": "2024-06-30"}, ]}
+
+    # TODO
+    # student = services_student.query_student(pk)
+    return render(request, 'students/student_record.html', {'student': student})

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Detail{% endblock %}
+
+{% block content %}
+<div class="student-detail-container">
+    <!-- Header Section -->
+    <div class="student-header">
+        <h1 class="page-title">{{ student.first_name }} {{ student.last_name }}</h1>
+        <p class="student-email">{{ student.email }}</p>
+    </div>
+
+    <!-- Details Section -->
+    <div class="student-details">
+        <div class="details-card">
+            <h2 class="details-title">Student Information</h2>
+            <div class="details-content">
+                <div class="detail-item">
+                    <span class="detail-label">First Name:</span>
+                    <span class="detail-value">{{ student.first_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Name:</span>
+                    <span class="detail-value">{{ student.last_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{ student.email }}</span>
+                </div>
+<!--                <div class="detail-item">-->
+<!--                    <span class="detail-label">Enrollment Date:</span>-->
+<!--                    <span class="detail-value">{{ student.enrollment_date }}</span>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Courses Section -->
+    <div class="related-courses">
+        <h2 class="details-title">Enrolled Courses</h2>
+        {% if student.courses %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Description</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in student.courses %}
+                        <tr>
+                            <td>{{ course.name }}</td>
+                            <td>{{ course.description }}</td>
+                            <td>{{ course.start_date }}</td>
+                            <td>{{ course.end_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-courses">This student is not enrolled in any courses.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .student-detail-container {
+        padding: 2rem;
+    }
+
+    .student-header {
+        background-color: #3B5998;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .student-header .page-title {
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .student-header .student-email {
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+    }
+
+    .student-details {
+        margin-bottom: 2rem;
+    }
+
+    .details-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .details-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: #3B5998;
+        text-align: left;
+    }
+
+    .details-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .detail-value {
+        color: #333;
+    }
+
+    .related-courses {
+        margin-top: 2rem;
+    }
+
+    .related-courses .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .related-courses .table th,
+    .related-courses .table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .related-courses .table th {
+        background-color: #f4f4f4;
+    }
+
+    .related-courses .table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .related-courses .no-courses {
+        font-size: 1.2rem;
+        color: #888;
+        text-align: center;
+        margin-top: 1rem;
+    }
+</style>
+
+{% endblock %}
