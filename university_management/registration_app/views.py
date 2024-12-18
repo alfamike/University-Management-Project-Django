@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from registration_app.services_fabric import services_student
+from registration_app.services_fabric import services_student, services_course
 from .forms.form_course import CourseForm
 from .forms.form_student import StudentForm
 from .forms.form_title import TitleForm
@@ -207,10 +207,10 @@ def student_list(request):
     # TODO
     # titles = services_title.get_all_titles()
     titles = [
-        {"id": 1, "name": "Blockchain"},
-        {"id": 2, "name": "Programación Lógica"},
-        {"id": 3, "name": "Robótica"},
-        {"id": 4, "name": "Ética"}
+        {"id": 1, "name": "Master in Artificial Intelligence"},
+        {"id": 2, "name": "Master in Data Analytics"},
+        {"id": 3, "name": "Master in Robotics"},
+        {"id": 4, "name": "Master in Business Administration"}
     ]
 
     # Todo
@@ -264,7 +264,7 @@ def title_list(request):
     # titles = services_title.get_all_titles()
     titles = [
         {
-            "name": "Blockchain",
+            "name": "Master in Artificial Intelligence",
             "description": "Test",
         },
         {
@@ -272,17 +272,17 @@ def title_list(request):
             "description": "Test",
         },
         {
-            "name": "Robótica",
+            "name": "Master in Data Analytics",
             "description": "Test",
         },
         {
-            "name": "Ética",
+            "name": "Master in Business Administration",
             "description": "Test",
         }
     ]
 
     # Pagination setup
-    paginator = Paginator(titles, 2)  # 10 titles per page
+    paginator = Paginator(titles, 10)  # 10 titles per page
     page_number = request.GET.get('page', 1)  # Default to page 1 if no page param
     try:
         page_obj = paginator.get_page(page_number)
@@ -312,4 +312,79 @@ def title_list(request):
 
     return render(request, 'titles/title_list.html', {
         'page_obj': page_obj,
+    })
+
+
+def course_list(request):
+    # Todo
+    # courses = services_course.get_all_courses()
+    courses = [
+        {"id": 1, "name": "Introduction to Programming",
+         "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
+         "end_date": "2024-05-10"},
+        {"id": 2, "name": "Advanced Web Development",
+         "description": "Explore advanced concepts in web development with Django and React.",
+         "start_date": "2024-02-15", "end_date": "2024-06-30"},
+        {"id": 3, "name": "Database Management Systems",
+         "description": "Understand the design, implementation, and management of database systems.",
+         "start_date": "2024-03-01", "end_date": "2024-07-15"},
+        {"id": 4, "name": "Machine Learning Basics",
+         "description": "An introduction to machine learning concepts and algorithms.", "start_date": "2024-04-05",
+         "end_date": "2024-08-20"}
+    ]
+
+    # Filters
+    title_filter = request.GET.get('title', None)
+
+    # Get filters for titles
+    # TODO
+    # titles = services_title.get_all_titles()
+    titles = [
+        {"id": 1, "name": "Master in Artificial Intelligence"},
+        {"id": 2, "name": "Master in Data Analytics"},
+        {"id": 3, "name": "Master in Robotics"},
+        {"id": 4, "name": "Master in Business Administration"}
+    ]
+
+    # If invalid or empty, reset to None
+    title_filter = None if title_filter in [None, '', 'None'] else title_filter
+
+    # Filter by title if provided
+    if title_filter:
+        courses = services_course.get_courses_by_title(title_filter)
+
+    # Pagination setup
+    paginator = Paginator(courses, 5)  # 5 courses per page
+    page_number = request.GET.get('page', 1)  # Default to page 1 if no page param
+    try:
+        page_obj = paginator.get_page(page_number)
+    except Exception as e:
+        print(f"Error while getting page: {e}")
+        page_obj = paginator.get_page(1)  # Default to first page if there's an issue
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if is_ajax:
+        # Only return the filtered courses' list in JSON format
+        course_data = []
+        for course in page_obj:
+            course_data.append({
+                'name': course["name"],
+                'description': course["description"]
+            })
+
+        return JsonResponse({
+            'courses': course_data,
+            'has_next': page_obj.has_next(),
+            'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+            'has_previous': page_obj.has_previous(),
+            'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
+            'current_page': page_obj.number,
+            'total_pages': page_obj.paginator.num_pages,
+        })
+
+    return render(request, 'courses/course_list.html', {
+        'page_obj': page_obj,
+        'titles': titles,
+        'title_filter': title_filter,
     })

@@ -212,7 +212,10 @@
         font-size: 1rem;
         border: 1px solid #ddd;
         border-radius: 4px;
-        width: 150px;
+        box-sizing: border-box;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .btn-filter {
