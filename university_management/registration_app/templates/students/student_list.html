@@ -11,7 +11,7 @@
         <div class="filter">
             <label for="title">Title:</label>
             <select id="title" name="title" class="filter-dropdown">
-<!--                <option value="">All Titles</option>-->
+                <option value="">All Titles</option>
                 {% for title in titles %}
                     <option value="{{ title.id }}" {% if title.id == title_filter %}selected{% endif %}>{{ title.name }}</option>
                 {% endfor %}
@@ -21,7 +21,7 @@
         <div class="filter">
             <label for="course">Course:</label>
             <select id="course" name="course" class="filter-dropdown">
-<!--                <option value="">All Courses</option>-->
+                <option value="">All Courses</option>
                 {% for course in courses %}
                     <option value="{{ course.id }}" {% if course.id == course_filter %}selected{% endif %}>{{ course.name }}</option>
                 {% endfor %}
