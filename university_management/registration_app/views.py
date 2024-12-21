@@ -422,4 +422,52 @@ def student_record(request, pk):
 
     # TODO
     # student = services_student.query_student(pk)
-    return render(request, 'students/student_record.html', {'student': student})
+
+    # Todo
+    # courses = services_course.get_all_courses()
+    courses = [
+        {"id": 1, "name": "Introduction to Programming",
+         "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
+         "end_date": "2024-05-10", "title": 1},
+        {"id": 2, "name": "Advanced Web Development",
+         "description": "Explore advanced concepts in web development with Django and React.",
+         "start_date": "2024-02-15", "end_date": "2024-06-30", "title": 1},
+        {"id": 3, "name": "Database Management Systems",
+         "description": "Understand the design, implementation, and management of database systems.",
+         "start_date": "2024-03-01", "end_date": "2024-07-15", "title": 2},
+        {"id": 4, "name": "Machine Learning Basics",
+         "description": "An introduction to machine learning concepts and algorithms.", "start_date": "2024-04-05",
+         "end_date": "2024-08-20", "title": 4}
+    ]
+
+    # TODO
+    # titles = services_title.get_all_titles()
+    titles = [
+        {"id": 1, "name": "Master in Artificial Intelligence"},
+        {"id": 2, "name": "Master in Data Analytics"},
+        {"id": 3, "name": "Master in Robotics"},
+        {"id": 4, "name": "Master in Business Administration"}
+    ]
+
+    return render(request, 'students/student_record.html', {'student': student,
+                                                            'titles': titles, 'courses': courses})
+
+
+def de_enroll_courses(request, pk):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        course_ids = request.POST.getlist('course_ids[]')
+        # services_student.de_enroll_courses(pk, course_ids)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
+def enroll_courses(request, pk):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        course_ids = request.POST.getlist('course_ids[]')
+        # services_student.enroll_courses(pk, course_ids)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)

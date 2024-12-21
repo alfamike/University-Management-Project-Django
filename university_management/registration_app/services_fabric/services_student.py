@@ -118,7 +118,7 @@ def get_students_by_course(course_id):
     return response
 
 
-def enroll_student_in_course(student_id, course_id):
+def enroll_student_in_course(students_id, courses_id):
     fabric_client = get_fabric_client()
 
     channel = fabric_client.get_channel('mychannel')
@@ -128,8 +128,27 @@ def enroll_student_in_course(student_id, course_id):
         requestor=admin_user,
         channel_name='mychannel',
         chaincode_name='mycc',
-        fcn='EnrollStudentInCourse',
-        args=[student_id, course_id],
+        fcn='EnrollStudentsInCourse',
+        args=[students_id, courses_id],
+        transient_map={},
+        wait_for_event=True
+    )
+
+    return response
+
+
+def de_enroll_student_in_course(students_id, courses_id):
+    fabric_client = get_fabric_client()
+
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_invoke(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',
+        fcn='DeEnrollStudentsInCourse',
+        args=[students_id, courses_id],
         transient_map={},
         wait_for_event=True
     )
