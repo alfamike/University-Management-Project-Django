@@ -449,8 +449,18 @@ def student_record(request, pk):
         {"id": 4, "name": "Master in Business Administration"}
     ]
 
+    # TODO
+    # course_grades = services_student.get_student_course_grades(pk)
+    course_grades = [
+        {"id": 1, "course_id": 1, "grade": 90},
+        {"id": 2, "course_id": 2, "grade": 85},
+        {"id": 3, "course_id": 3, "grade": 95},
+        {"id": 4, "course_id": 4, "grade": 88}
+    ]
+
     return render(request, 'students/student_record.html', {'student': student,
-                                                            'titles': titles, 'courses': courses})
+                                                            'titles': titles, 'courses': courses,
+                                                            'course_grades': course_grades})
 
 
 def de_enroll_courses(request, pk):

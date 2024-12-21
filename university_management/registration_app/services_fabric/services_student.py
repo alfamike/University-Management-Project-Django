@@ -154,3 +154,21 @@ def de_enroll_student_in_course(students_id, courses_id):
     )
 
     return response
+
+
+def get_student_course_grades(pk):
+    fabric_client = get_fabric_client()
+
+    # Cargar el canal y la identidad del usuario
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_query(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',  # Nombre de tu Chaincode
+        fcn='GetStudentGradesByCourse',  # Función en el Chaincode
+        args=[pk]
+    )
+
+    return response
