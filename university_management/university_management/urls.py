@@ -44,8 +44,8 @@ urlpatterns = [
     path('createStudent/', views.create_student, name='create_student'),
     path('students/', views.student_list, name='student_list'),
     path('students/<int:pk>/', views.student_record, name='student_record'),
-    path('de_enroll_courses/<int:pk>/', views.de_enroll_courses, name='de_enroll_student'),
-    path('enroll_courses/<int:pk>/', views.enroll_courses, name='enroll_student'),
+    path('de_enroll_courses/', views.de_enroll_courses, name='de_enroll_student'),
+    path('enroll_courses/', views.enroll_courses, name='enroll_student'),
 
     # Course
     path('createCourse/', views.create_course, name='create_course'),
@@ -54,4 +54,8 @@ urlpatterns = [
     # Title
     path('createTitle/', views.create_title, name='create_title'),
     path('titles/', views.title_list, name='title_list'),
+
+    # Activity
+    path('get_activities_by_course_of_activity_grades/', views.get_activities_by_course_of_activity_grades,
+         name='get_activities_by_course_of_activity_grades'),
 ]

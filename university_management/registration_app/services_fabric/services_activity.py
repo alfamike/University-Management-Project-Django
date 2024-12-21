@@ -84,3 +84,21 @@ def get_all_activities():
     )
 
     return response
+
+
+def get_activities_by_course(course_id):
+    fabric_client = get_fabric_client()
+
+    # Cargar el canal y la identidad del usuario
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_query(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',  # Nombre de tu Chaincode
+        fcn='GetActivitiesByCourse',  # Función en el Chaincode
+        args=[course_id]
+    )
+
+    return response

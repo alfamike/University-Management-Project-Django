@@ -79,3 +79,21 @@ def get_all_student_course_grades(student_id):
     )
 
     return response
+
+
+def get_student_course_grades(student_id):
+    fabric_client = get_fabric_client()
+
+    # Cargar el canal y la identidad del usuario
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_query(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',  # Nombre de tu Chaincode
+        fcn='GetStudentCourseGrades',  # Función en el Chaincode
+        args=[student_id]
+    )
+
+    return response

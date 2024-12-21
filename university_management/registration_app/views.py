@@ -450,7 +450,7 @@ def student_record(request, pk):
     ]
 
     # TODO
-    # course_grades = services_student.get_student_course_grades(pk)
+    # course_grades = services_student_course_grades.get_student_course_grades(pk)
     course_grades = [
         {"id": 1, "course_id": 1, "grade": 90},
         {"id": 2, "course_id": 2, "grade": 85},
@@ -458,26 +458,77 @@ def student_record(request, pk):
         {"id": 4, "course_id": 4, "grade": 88}
     ]
 
+    # TODO
+    # activities_grades = services_student_activity_grades.get_student_activity_grades(pk)
+    activities_grades = [
+        {"id": 1, "student": 5, "activity": 1, "grade": 90},
+        {"id": 2, "student": 5, "activity": 2, "grade": 85},
+        {"id": 3, "student": 5, "activity": 3, "grade": 95},
+        {"id": 4, "student": 5, "activity": 4, "grade": 88}
+    ]
+
     return render(request, 'students/student_record.html', {'student': student,
                                                             'titles': titles, 'courses': courses,
-                                                            'course_grades': course_grades})
+                                                            'course_grades': course_grades,
+                                                            'activity_grades': activities_grades})
 
 
-def de_enroll_courses(request, pk):
+def de_enroll_courses(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
-        course_ids = request.POST.getlist('course_ids[]')
-        # services_student.de_enroll_courses(pk, course_ids)
+        data = json.loads(request.body)
+        course_ids = data.get('course_ids', [])
+        # student = data.get('pk', None)
+        # services_student.de_enroll_courses(student, course_ids)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
 
 
-def enroll_courses(request, pk):
+def enroll_courses(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
-        course_ids = request.POST.getlist('course_ids[]')
-        # services_student.enroll_courses(pk, course_ids)
+        data = json.loads(request.body)
+        course_ids = data.get('course_ids', [])
+        # student = data.get('pk', None)
+        # services_student.enroll_courses(student, course_ids)
         return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
+def get_activities_by_course_of_activity_grades(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        activities_grades = data.get('activities_grades', [])
+        course_id = data.get('course_id', None)
+
+        # activities = services_activity.get_activities_by_course(course_id)
+        activities = [
+            {"id": 1, "name": "Assignment 1", "description": "Complete the first assignment.",
+             "due_date": "2024-01-20", "course": 1},
+            {"id": 2, "name": "Quiz 1", "description": "Take the first quiz.", "due_date": "2024-02-10", "course": 1},
+            {"id": 3, "name": "Project Proposal", "description": "Submit the project proposal.",
+             "due_date": "2024-03-05", "course": 1},
+            {"id": 4, "name": "Midterm Exam", "description": "Prepare for the midterm exam.", "due_date": "2024-04-15",
+             "course": 1},
+            {"id": 5, "name": "Final Project", "description": "Complete the final project.", "due_date": "2024-05-30",
+             "course": 1}
+        ]
+
+        activity_grades_dict = {grade['activity']: grade['grade'] for grade in activities_grades}
+
+        activities_data = []
+        for activity in activities:
+            activities_data.append({
+                'id': activity['id'],
+                'name': activity['name'],
+                'description': activity['description'],
+                'due_date': activity['due_date'],
+                'grade': activity_grades_dict.get(activity['id'], 'N/A')
+            })
+
+        return JsonResponse({'activities': activities_data})
     return JsonResponse({'status': 'failed'}, status=400)

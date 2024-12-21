@@ -63,7 +63,7 @@ def update_student_activity_grade(student_id, activity_id, new_grade):
     return response
 
 
-def get_all_student_activity_grades(student_id):
+def get_all_students_activity_grades(student_id):
     fabric_client = get_fabric_client()
 
     # Cargar el canal y la identidad del usuario
@@ -74,7 +74,25 @@ def get_all_student_activity_grades(student_id):
         requestor=admin_user,
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='GetAllStudentActivityGrades',  # Función en el Chaincode
+        fcn='GetAllStudentsActivityGrades',  # Función en el Chaincode
+        args=[student_id]
+    )
+
+    return response
+
+
+def get_student_activity_grades(student_id):
+    fabric_client = get_fabric_client()
+
+    # Cargar el canal y la identidad del usuario
+    channel = fabric_client.get_channel('mychannel')
+    admin_user = fabric_client.get_user('Org1', 'Admin')
+
+    response = channel.chaincode_query(
+        requestor=admin_user,
+        channel_name='mychannel',
+        chaincode_name='mycc',  # Nombre de tu Chaincode
+        fcn='GetStudentActivityGrades',  # Función en el Chaincode
         args=[student_id]
     )
 

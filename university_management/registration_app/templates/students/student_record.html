@@ -38,8 +38,9 @@
     <!-- Related Courses Section -->
     <div class="related-courses">
         <h2 class="details-title">Enrolled Courses
-            <button id="add-course-btn" class="btn">Añadir</button>
-            <button id="delete-course-btn" class="btn">Eliminar</button>
+            <button id="add-course-btn" class="btn">Add</button>
+            <button id="delete-course-btn" class="btn">Remove</button>
+            <button id="show-activities-course-btn" class="btn">Show Activities</button>
         </h2>
         {% if student.courses %}
             <table class="table">
@@ -92,6 +93,24 @@
         {% else %}
             <p class="no-courses">This student is not enrolled in any courses.</p>
         {% endif %}
+    </div>
+
+    <!-- Student's Activities Section -->
+    <div id="activities-section" style="display: none;">
+        <h2 class="details-title">Activities</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Activity Name</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="activities-table-body">
+                <!-- Activities will be populated here by JavaScript -->
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -246,6 +265,14 @@
             display: none;
         }
 
+        #show-activities-course-btn {
+            display: none;
+        }
+
+        #activities-section {
+            display: none;
+        }
+
     }
 
     .popup {
@@ -282,6 +309,10 @@
         text-decoration: none;
         cursor: pointer;
     }
+
+    #activities-section {
+        display: none;
+    }
 </style>
 
 <script>
@@ -317,6 +348,54 @@
                 option.textContent = course.name;
                 courseSelect.appendChild(option);
             });
+        });
+
+        // Event listener for "Show Activities" button
+        document.getElementById('show-activities-course-btn').addEventListener('click', function() {
+            const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
+            const activitiesTableBody = document.getElementById('activities-table-body');
+            const activitiesSection = document.getElementById('activities-section');
+
+            if (selectedCheckboxes.length === 1) {
+                const selectedCourseId = selectedCheckboxes[0].value;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                fetch('/get_activities_by_course_of_activity_grades/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({
+                        course_id: selectedCourseId,
+                        activities_grades: {{ activity_grades|safe }}
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    activitiesTableBody.innerHTML = ''; // Clear previous activities
+
+                    data.activities.forEach(activity => {
+                        const row = `
+                            <tr>
+                                <td>${activity.name}</td>
+                                <td>${activity.description}</td>
+                                <td>${activity.due_date}</td>
+                                <td>${activity.grade}</td>
+                            </tr>
+                        `;
+                        activitiesTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    activitiesSection.style.display = 'block';
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                activitiesSection.style.display = 'none';
+                alert('Please select exactly one course to view activities.');
+                return;
+            }
         });
     });
 
