@@ -44,12 +44,13 @@ urlpatterns = [
     path('createStudent/', views.create_student, name='create_student'),
     path('students/', views.student_list, name='student_list'),
     path('students/<int:pk>/', views.student_record, name='student_record'),
-    path('de_enroll_courses/', views.de_enroll_courses, name='de_enroll_student'),
-    path('enroll_courses/', views.enroll_courses, name='enroll_student'),
+    path('deEnrollCourses/', views.de_enroll_courses, name='de_enroll_student'),
+    path('enrollCourses/', views.enroll_courses, name='enroll_student'),
 
     # Course
     path('createCourse/', views.create_course, name='create_course'),
     path('courses/', views.course_list, name='course_list'),
+    path('addGradeToCourse/', views.add_grade_to_course, name='add_grade_to_course'),
 
     # Title
     path('createTitle/', views.create_title, name='create_title'),
