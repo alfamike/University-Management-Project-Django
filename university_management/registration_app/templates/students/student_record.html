@@ -38,10 +38,10 @@
     <!-- Related Courses Section -->
     <div class="related-courses">
         <h2 class="details-title">Enrolled Courses
-            <button id="add-course-btn" class="btn">Add</button>
-            <button id="delete-course-btn" class="btn">Remove</button>
+            <button id="add-course-btn" class="btn">Add Course</button>
+            <button id="delete-course-btn" class="btn">Remove Course</button>
             <button id="show-activities-course-btn" class="btn">Show Activities</button>
-            <button id="add-grade-btn" class="btn">Add Grade</button>
+            <button id="manage-grade-btn" class="btn">Manage Grade</button>
         </h2>
         {% if student.courses %}
             <table class="table">
@@ -98,7 +98,9 @@
 
     <!-- Student's Activities Section -->
     <div id="activities-section" style="display: none;">
-        <h2 class="details-title">Activities</h2>
+        <h2 class="details-title">Activities
+            <button id="manage-activity-btn" class="btn">Manage Grade</button>
+        </h2>
         <table class="table">
             <thead>
                 <tr>
@@ -134,19 +136,36 @@
     </div>
 </div>
 
-<!-- Pop-up for adding a grade to a course -->
-<div id="add-grade-popup" class="popup">
+<!-- Pop-up for managing a grade of a course -->
+<div id="manage-grade-popup" class="popup">
     <div class="popup-content">
         <span class="close-btn">&times;</span>
         <h3>Add Grade to Course</h3>
-        <form id="add-grade-form">
+        <form id="manage-grade-form">
             <label for="course-grade-select">Course:</label>
             <select id="course-grade-select" name="course-select" class="filter-dropdown">
                 <!-- Options for courses -->
             </select>
             <label for="grade-input">Grade:</label>
             <input type="number" id="grade-input" name="grade-input" min="0" max="100" required>
-            <button type="submit" class="btn">Add</button>
+            <button type="submit" class="btn">Apply</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for managing a grade of an activity -->
+<div id="manage-grade-activity-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add Grade to Activity</h3>
+        <form id="manage-grade-activity-form">
+            <label for="activity-grade-select">Activity:</label>
+            <select id="activity-grade-select" name="activity-select" class="filter-dropdown">
+                <!-- Options for activities -->
+            </select>
+            <label for="activity-grade-input">Grade:</label>
+            <input type="number" id="activity-grade-input" name="grade-input" min="0" max="100" required>
+            <button type="submit" class="btn">Apply</button>
         </form>
     </div>
 </div>
@@ -369,7 +388,7 @@
             });
         });
 
-        // Populate course dropdown for adding grades
+        // Populate course dropdown for managing grades
         student_courses.forEach(course => {
             const option = document.createElement('option');
             option.value = course.id;
@@ -402,6 +421,8 @@
                 .then(response => response.json())
                 .then(data => {
                     activitiesTableBody.innerHTML = ''; // Clear previous activities
+                    const activityGradeSelect = document.getElementById('activity-grade-select');
+                    activityGradeSelect.innerHTML = ''; // Clear previous options
 
                     data.activities.forEach(activity => {
                         const row = `
@@ -413,6 +434,14 @@
                             </tr>
                         `;
                         activitiesTableBody.insertAdjacentHTML('beforeend', row);
+
+                        // Populate activities dropdown for managing grades
+
+                        const option = document.createElement('option');
+                        option.value = activity.id;
+                        option.textContent = activity.name;
+                        activityGradeSelect.appendChild(option);
+
                     });
 
                     activitiesSection.style.display = 'block';
@@ -430,16 +459,24 @@
         document.getElementById('add-course-popup').style.display = 'block';
     });
 
-    document.getElementById('add-grade-btn').addEventListener('click', function() {
-        document.getElementById('add-grade-popup').style.display = 'block';
+    document.getElementById('manage-grade-btn').addEventListener('click', function() {
+        document.getElementById('manage-grade-popup').style.display = 'block';
+    });
+
+    document.getElementById('manage-activity-btn').addEventListener('click', function() {
+        document.getElementById('manage-grade-activity-popup').style.display = 'block';
     });
 
     document.getElementById('add-course-popup').querySelector('.close-btn').addEventListener('click', function() {
         document.getElementById('add-course-popup').style.display = 'none';
     });
 
-    document.getElementById('add-grade-popup').querySelector('.close-btn').addEventListener('click', function() {
-        document.getElementById('add-grade-popup').style.display = 'none';
+    document.getElementById('manage-grade-popup').querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('manage-grade-popup').style.display = 'none';
+    });
+
+    document.getElementById('manage-grade-activity-popup').querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('manage-grade-activity-popup').style.display = 'none';
     });
 
     window.addEventListener('click', function(event) {
@@ -447,8 +484,12 @@
             document.getElementById('add-course-popup').style.display = 'none';
         }
 
-        if (event.target == document.getElementById('add-grade-popup')) {
-            document.getElementById('add-grade-popup').style.display = 'none';
+        if (event.target == document.getElementById('manage-grade-popup')) {
+            document.getElementById('manage-grade-popup').style.display = 'none';
+        }
+
+        if (event.target == document.getElementById('manage-grade-activity-popup')) {
+            document.getElementById('manage-grade-activity-popup').style.display = 'none';
         }
     });
 
@@ -510,12 +551,12 @@
         .catch(error => console.error('Error:', error));
     });
 
-    document.getElementById('add-grade-form').addEventListener('submit', function(event) {
+    document.getElementById('manage-grade-form').addEventListener('submit', function(event) {
         event.preventDefault();
         const courseId = document.getElementById('course-grade-select').value;
         const grade = document.getElementById('grade-input').value;
 
-        fetch(`/addGradeToCourse/`, {
+        fetch(`/manageGradeToCourse/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -533,7 +574,36 @@
             if (data.status === 'success') {
                 location.reload();
             } else {
-                alert('Failed to add grade.');
+                alert('Failed to manage grade.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('manage-grade-activity-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const activityId = document.getElementById('activity-grade-select').value;
+        const grade = document.getElementById('activity-grade-input').value;
+
+        fetch(`/manageGradeToActivity/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                student_id: student,
+                activity_id: activityId,
+                grade: grade
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Failed to manage grade.');
             }
         })
         .catch(error => console.error('Error:', error));

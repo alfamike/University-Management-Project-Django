@@ -534,17 +534,35 @@ def get_activities_by_course_of_activity_grades(request):
     return JsonResponse({'status': 'failed'}, status=400)
 
 
-def add_grade_to_course(request):
+def manage_grade_to_course(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
         data = json.loads(request.body)
         student_id = data.get('student_id')
         course_id = data.get('course_id')
-        grade = data.get('grade')
+        grade = int(data.get('grade'))
 
-        # services_student_course_grade.create_student_course_grade({'student_id': student_id, 'course_id': course_id,
+        # TODO
+        # services_student_course_grade.upsert_student_course_grade({'student_id': student_id, 'course_id': course_id,
         # 'grade': grade})
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
+def manage_grade_to_activity(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        student_id = data.get('student_id')
+        activity_id = data.get('activity_id')
+        grade = int(data.get('grade'))
+
+        # TODO
+        # services_student_activity_grade.upsert_student_activity_grade({'student_id': student_id,
+        #  'activity_id': activity_id, 'grade': grade})
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
