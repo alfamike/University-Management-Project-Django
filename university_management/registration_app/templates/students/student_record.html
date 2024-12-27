@@ -498,14 +498,14 @@
         const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
 
         if (selectedCourses.length > 0) {
-            fetch(`/deEnrollCourses/${student}/`, {
+            fetch(`/deEnrollCourses/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: JSON.stringify({ course_ids: selectedCourses })
+                body: JSON.stringify({ course_ids: selectedCourses, pk: student })
             })
             .then(response => response.json())
             .then(data => {
@@ -531,14 +531,14 @@
         event.preventDefault();
         const course = document.getElementById('course-name').value;
 
-        fetch(`/enrollCourses/${student}/`, {
+        fetch(`/enrollCourses/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: JSON.stringify({ course_id: course })
+            body: JSON.stringify({ course_id: course , pk: student })
         })
         .then(response => response.json())
         .then(data => {
