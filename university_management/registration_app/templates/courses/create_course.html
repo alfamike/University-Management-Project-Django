@@ -9,7 +9,7 @@
 <p>Fill out the form below to register a new course in the system.</p>
 
 <div class="form-container">
-    <form class="modern-form" method="POST">
+    <form class="modern-form" action="createCourse/" method="POST">
         {% csrf_token %}
 <!--        <div class="form-group">-->
 <!--            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>-->
@@ -46,10 +46,5 @@
         </div>
     </form>
 </div>
-
-
-<style>
-
-</style>
 
 {% endblock %}

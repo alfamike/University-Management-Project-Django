@@ -9,7 +9,7 @@
 <p>Fill out the form below to register a new student in the system.</p>
 
 <div class="form-container">
-    <form method="POST" class="modern-form">
+    <form method="POST" action="createStudent/" class="modern-form">
         {% csrf_token %}
         <div class="form-group">
             <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
@@ -34,10 +34,5 @@
         </div>
     </form>
 </div>
-
-
-<style>
-
-</style>
 
 {% endblock %}
