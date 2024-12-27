@@ -491,6 +491,20 @@ def modify_student(request):
     return JsonResponse({'status': 'failed'}, status=400)
 
 
+def delete_student(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        student_id = data.get('id')
+
+        # Delete the student
+        # TODO: Delete the student from the database
+        # services_student.update_student(student_id, is_deleted=True)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
 def de_enroll_courses(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 

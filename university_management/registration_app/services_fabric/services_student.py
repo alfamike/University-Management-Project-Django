@@ -44,7 +44,7 @@ def query_student(student_id):
     return response
 
 
-def update_student(student_id, new_first_name, new_last_name, new_email):
+def update_student(student_id, new_first_name, new_last_name, new_email, is_deleted):
     fabric_client = get_fabric_client()
 
     # Cargar el canal y la identidad del usuario
@@ -56,7 +56,7 @@ def update_student(student_id, new_first_name, new_last_name, new_email):
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='UpdateStudent',  # Función en el Chaincode
-        args=[student_id, new_first_name, new_last_name, new_email],
+        args=[student_id, new_first_name, new_last_name, new_email, is_deleted],
         transient_map={},
         wait_for_event=True
     )

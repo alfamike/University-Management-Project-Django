@@ -15,6 +15,7 @@
         <div class="details-card">
             <h2 class="details-title">Student Information
                 <button id="edit-student-btn" class="btn">Edit</button>
+                <button id="delete-student-btn" class="btn">Delete</button>
             </h2>
             <div class="details-content">
                 <div class="detail-item">
@@ -517,28 +518,30 @@
         const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
 
         if (selectedCourses.length > 0) {
-            fetch(`/deEnrollCourses/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify({ course_ids: selectedCourses, pk: student })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Remove the selected courses from the table
-                    selectedCourses.forEach(courseId => {
-                        document.querySelector(`.course-checkbox[value="${courseId}"]`).closest('tr').remove();
-                    });
-                    location.reload();
-                } else {
-                    alert('Failed to de-enroll courses.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            if (confirm('Are you sure you want to delete these courses?')) {
+                fetch(`/deEnrollCourses/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ course_ids: selectedCourses, pk: student })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Remove the selected courses from the table
+                        selectedCourses.forEach(courseId => {
+                            document.querySelector(`.course-checkbox[value="${courseId}"]`).closest('tr').remove();
+                        });
+                        location.reload();
+                    } else {
+                        alert('Failed to de-enroll courses.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
         } else {
             alert('No courses selected.');
         }
@@ -671,6 +674,29 @@
             }
         })
         .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('delete-student-btn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete this student?')) {
+            fetch(`/deleteStudent/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ id: student })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = '/students/'; // Redirect to the students list page
+                } else {
+                    alert('Failed to delete student.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
     });
 </script>
 
