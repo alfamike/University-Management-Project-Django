@@ -47,7 +47,7 @@
         <tbody id="course-list">
         {% for course in page_obj %}
         <tr>
-            <td>{{ course.name }}</td>
+            <td><a href="{% url 'course_record' course.id %}">{{ course.name }}</a></td>
             <td>{{ course.description }}</td>
             <td>{{ course.start_date }}</td>
             <td>{{ course.end_date }}</td>

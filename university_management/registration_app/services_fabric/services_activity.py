@@ -9,7 +9,6 @@ def create_activity(activity_data):
     admin_user = fabric_client.get_user('Org1', 'Admin')
 
     # Preparar los argumentos para invocar el Chaincode
-    activity_id = activity_data['id']
     course_id = activity_data['course_id']
     name = activity_data['name']
     description = activity_data['description']
@@ -21,7 +20,7 @@ def create_activity(activity_data):
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='CreateActivity',  # Función en el Chaincode
-        args=[activity_id, course_id, name, description, due_date],
+        args=[course_id, name, description, due_date],
         transient_map={},
         wait_for_event=True
     )
@@ -48,7 +47,7 @@ def query_activity(activity_id):
     return response
 
 
-def update_activity(activity_id, new_name, new_description, new_due_date):
+def update_activity(activity_id, new_name, new_description, new_due_date, is_deleted):
     fabric_client = get_fabric_client()
 
     # Cargar el canal y la identidad del usuario
@@ -60,7 +59,7 @@ def update_activity(activity_id, new_name, new_description, new_due_date):
         channel_name='mychannel',
         chaincode_name='mycc',  # Nombre de tu Chaincode
         fcn='UpdateActivity',  # Función en el Chaincode
-        args=[activity_id, new_name, new_description, new_due_date],
+        args=[activity_id, new_name, new_description, new_due_date, str(is_deleted)],
         transient_map={},
         wait_for_event=True
     )

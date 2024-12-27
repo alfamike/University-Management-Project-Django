@@ -385,6 +385,7 @@ def course_list(request):
         course_data = []
         for course in page_obj:
             course_data.append({
+                'id': course["id"],
                 'name': course["name"],
                 'description': course["description"],
                 'start_date': course["start_date"],
@@ -551,6 +552,34 @@ def manage_grade_to_course(request):
     return JsonResponse({'status': 'failed'}, status=400)
 
 
+def course_record(request, pk):
+    # Todo
+    # course = services_course.query_course(pk)
+    course = {"id": 4, "name": "Machine Learning Basics",
+              "description": "An introduction to machine learning concepts and algorithms.", "start_date": "2024-04-05",
+              "end_date": "2024-08-20", "title": 4}
+
+    # Fetch the related activities
+    # TODO
+    # activities = services_activity.get_activities_by_course(pk)
+    activities = [
+        {"id": 1, "name": "Assignment 1", "description": "Complete the first assignment.",
+         "due_date": "2024-01-20", "course": 1},
+        {"id": 2, "name": "Quiz 1", "description": "Take the first quiz.", "due_date": "2024-02-10", "course": 1},
+        {"id": 3, "name": "Project Proposal", "description": "Submit the project proposal.",
+         "due_date": "2024-03-05", "course": 1},
+        {"id": 4, "name": "Midterm Exam", "description": "Prepare for the midterm exam.", "due_date": "2024-04-15",
+         "course": 1},
+        {"id": 5, "name": "Final Project", "description": "Complete the final project.", "due_date": "2024-05-30",
+         "course": 1}
+    ]
+
+    return render(request, 'courses/course_record.html', {
+        'course': course,
+        'activities': activities
+    })
+
+
 def manage_grade_to_activity(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
@@ -563,6 +592,59 @@ def manage_grade_to_activity(request):
         # TODO
         # services_student_activity_grade.upsert_student_activity_grade({'student_id': student_id,
         #  'activity_id': activity_id, 'grade': grade})
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
+def create_activity(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        name = data.get('name')
+        description = data.get('description')
+        due_date = data.get('due_date')
+        course_id = data.get('course_id')
+
+        # Create the new activity
+        # TODO
+        # services_activity.create_activity({'name': name, 'description': description,
+        # 'due_date': due_date, course_id: course_id})
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
+def remove_activity(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        activity_ids = data.get('activity_ids', [])
+
+        # Remove the selected activities
+        # TODO
+        # for activity in activity_ids:
+        # services_activity.update_activity(activity.activity_id, is_deleted=True)
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
+def modify_activity(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        activity_id = data.get('id')
+        name = data.get('name')
+        description = data.get('description')
+        due_date = data.get('due_date')
+
+        # Modify the activity
+        # TODO: Update the activity in the database
+        # services_activity.update_activity(activity_id, name, description, due_date)
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)

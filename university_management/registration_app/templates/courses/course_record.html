@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Detail{% endblock %}
+
+{% block content %}
+<div class="course-detail-container">
+    <!-- Header Section -->
+    <div class="course-header">
+        <h1 class="page-title">{{ course.name }}</h1>
+    </div>
+
+    <!-- Details Section -->
+    <div class="course-details">
+        <div class="details-card">
+            <h2 class="details-title">Course Information</h2>
+            <div class="details-content">
+                <div class="detail-item">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{{ course.name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value">{{ course.description }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Start Date:</span>
+                    <span class="detail-value">{{ course.start_date }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">End Date:</span>
+                    <span class="detail-value">{{ course.end_date }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Activities Section -->
+    <div class="related-activities">
+        <h2 class="details-title">Related Activities
+            <button id="add-activity-btn" class="btn">Add Activity</button>
+            <button id="modify-activity-btn" class="btn">Modify Activity</button>
+            <button id="delete-activity-btn" class="btn">Remove Activity</button>
+        </h2>
+        {% if activities %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Activity Name</th>
+                        <th>Description</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                        <tr>
+                            <td><input type="checkbox" class="activity-checkbox" value="{{ activity.id }}"></td>
+                            <td>{{ activity.name }}</td>
+                            <td>{{ activity.description }}</td>
+                            <td>{{ activity.due_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="cards">
+                {% for activity in activities %}
+                    <div class="card">
+                        <h3>{{ activity.name }}</h3>
+                        <p>{{ activity.description }}</p>
+                        <p><strong>Due Date:</strong> {{ activity.due_date }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-activities">This course has not got any activity.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pop-up for adding a activity -->
+<div id="add-activity-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add Activity to Course</h3>
+        <form id="add-activity-form">
+            <label for="activity-name">Name:</label>
+            <input type="text" id="activity-name" name="activity-name">
+            <label for="activity-description">Description:</label>
+            <input type="text" id="activity-description" name="activity-description">
+            <label for="activity-due-date">Due Date:</label>
+            <input type="date" id="activity-due-date" name="activity-due-date">
+            <button type="submit" class="btn">Add</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for modifying an activity -->
+<div id="modify-activity-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Modify Activity</h3>
+        <form id="modify-activity-form">
+            <input type="hidden" id="modify-activity-id" name="activity-id">
+            <label for="modify-activity-name">Name:</label>
+            <input type="text" id="modify-activity-name" name="activity-name">
+            <label for="modify-activity-description">Description:</label>
+            <input type="text" id="modify-activity-description" name="activity-description">
+            <label for="modify-activity-due-date">Due Date:</label>
+            <input type="date" id="modify-activity-due-date" name="activity-due-date">
+            <button type="submit" class="btn">Modify</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .course-detail-container {
+        padding: 2rem;
+    }
+
+    .course-header {
+        background-color: #3B5998;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+    }
+
+    .course-header .page-title {
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .course-details {
+        margin-bottom: 2rem;
+    }
+
+    .details-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .details-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: #3B5998;
+        text-align: left;
+    }
+
+    .details-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .detail-value {
+        color: #333;
+    }
+
+    .related-activities {
+        margin-top: 2rem;
+    }
+
+    .related-activities .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .related-activities .table th,
+    .related-activities .table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .related-activities .table th {
+        background-color: #f4f4f4;
+    }
+
+    .related-activities .table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .related-activities .no-activities {
+        font-size: 1.2rem;
+        color: #888;
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .related-activities .table {
+        display: table;
+    }
+    .related-activities .cards {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .related-activities .table {
+            display: none;
+        }
+
+        .related-activities .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .related-activities .card {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+    }
+
+    .popup {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .popup-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        border-radius: 8px;
+    }
+
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    document.getElementById('add-activity-btn').addEventListener('click', function() {
+        document.getElementById('add-activity-popup').style.display = 'block';
+    });
+
+    document.getElementById('add-activity-popup').querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('add-activity-popup').style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == document.getElementById('add-activity-popup')) {
+            document.getElementById('add-activity-popup').style.display = 'none';
+        }
+    });
+
+    document.getElementById('delete-activity-btn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
+        const selectedActivities = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+        if (selectedActivities.length > 0) {
+            fetch(`/removeActivity/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ activity_ids: selectedActivities })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Remove the selected activities from the table
+                    selectedActivities.forEach(activityId => {
+                        document.querySelector(`.course-checkbox[value="${activityId}"]`).closest('tr').remove();
+                    });
+                    location.reload();
+                } else {
+                    alert('Failed to remove activities.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            alert('No activities selected.');
+        }
+
+    });
+
+
+    document.getElementById('add-activity-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const activity_name = document.getElementById('activity-name').value;
+        const activity_description = document.getElementById('activity-description').value;
+        const activity_due_date = document.getElementById('activity-due-date').value;
+
+        fetch(`/createActivity/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ course_id: course_id, name: activity_name, description: activity_description,
+            due_date: activity_due_date })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Failed to add an activity.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('modify-activity-btn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
+        if (checkboxes.length !== 1) {
+            alert('Please select exactly one activity to modify.');
+            return;
+        }
+
+        const activityId = checkboxes[0].value;
+        const activityRow = checkboxes[0].closest('tr');
+        const activityName = activityRow.querySelector('td:nth-child(2)').textContent;
+        const activityDescription = activityRow.querySelector('td:nth-child(3)').textContent;
+        const activityDueDate = activityRow.querySelector('td:nth-child(4)').textContent;
+
+        document.getElementById('modify-activity-id').value = activityId;
+        document.getElementById('modify-activity-name').value = activityName;
+        document.getElementById('modify-activity-description').value = activityDescription;
+        document.getElementById('modify-activity-due-date').value = activityDueDate;
+
+        document.getElementById('modify-activity-popup').style.display = 'block';
+    });
+
+    document.getElementById('modify-activity-popup').querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('modify-activity-popup').style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == document.getElementById('modify-activity-popup')) {
+            document.getElementById('modify-activity-popup').style.display = 'none';
+        }
+    });
+
+    document.getElementById('modify-activity-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const activityId = document.getElementById('modify-activity-id').value;
+        const activityName = document.getElementById('modify-activity-name').value;
+        const activityDescription = document.getElementById('modify-activity-description').value;
+        const activityDueDate = document.getElementById('modify-activity-due-date').value;
+
+        fetch(`/modifyActivity/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ id: activityId, name: activityName, description: activityDescription, due_date: activityDueDate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Failed to modify the activity.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+
+{% endblock %}

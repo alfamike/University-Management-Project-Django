@@ -51,6 +51,7 @@ urlpatterns = [
     path('createCourse/', views.create_course, name='create_course'),
     path('courses/', views.course_list, name='course_list'),
     path('manageGradeToCourse/', views.manage_grade_to_course, name='manage_grade_to_course'),
+    path('courses/<int:pk>/', views.course_record, name='course_record'),
 
     # Title
     path('createTitle/', views.create_title, name='create_title'),
@@ -60,4 +61,7 @@ urlpatterns = [
     path('get_activities_by_course_of_activity_grades/', views.get_activities_by_course_of_activity_grades,
          name='get_activities_by_course_of_activity_grades'),
     path('manageGradeToActivity/', views.manage_grade_to_activity, name='manage_grade_to_activity'),
+    path('removeActivity/', views.remove_activity, name='remove_activity'),
+    path('createActivity/', views.create_activity, name='create_activity'),
+    path('modifyActivity/', views.modify_activity, name='modify_activity'),
 ]
