@@ -13,7 +13,9 @@
     <!-- Details Section -->
     <div class="student-details">
         <div class="details-card">
-            <h2 class="details-title">Student Information</h2>
+            <h2 class="details-title">Student Information
+                <button id="edit-student-btn" class="btn">Edit</button>
+            </h2>
             <div class="details-content">
                 <div class="detail-item">
                     <span class="detail-label">First Name:</span>
@@ -166,6 +168,23 @@
             <label for="activity-grade-input">Grade:</label>
             <input type="number" id="activity-grade-input" name="grade-input" min="0" max="100" required>
             <button type="submit" class="btn">Apply</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for editing student information -->
+<div id="edit-student-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Edit Student Information</h3>
+        <form id="edit-student-form">
+            <label for="edit-first-name">First Name:</label>
+            <input type="text" id="edit-first-name" name="first-name" value="{{ student.first_name }}">
+            <label for="edit-last-name">Last Name:</label>
+            <input type="text" id="edit-last-name" name="last-name" value="{{ student.last_name }}">
+            <label for="edit-email">Email:</label>
+            <input type="email" id="edit-email" name="email" value="{{ student.email }}">
+            <button type="submit" class="btn">Save</button>
         </form>
     </div>
 </div>
@@ -604,6 +623,51 @@
                 location.reload();
             } else {
                 alert('Failed to manage grade.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('edit-student-btn').addEventListener('click', function() {
+        document.getElementById('edit-student-popup').style.display = 'block';
+    });
+
+    document.getElementById('edit-student-popup').querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('edit-student-popup').style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == document.getElementById('edit-student-popup')) {
+            document.getElementById('edit-st-student-popup').style.display = 'none';
+        }
+    });
+
+    document.getElementById('edit-student-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const firstName = document.getElementById('edit-first-name').value;
+        const lastName = document.getElementById('edit-last-name').value;
+        const email = document.getElementById('edit-email').value;
+
+        fetch(`/modifyStudent/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                id: {{ student.id }},
+                first_name: firstName,
+                last_name: lastName,
+                email: email
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Failed to edit student information.');
             }
         })
         .catch(error => console.error('Error:', error));

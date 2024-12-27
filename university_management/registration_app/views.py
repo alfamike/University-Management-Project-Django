@@ -474,6 +474,23 @@ def student_record(request, pk):
                                                             'activity_grades': activities_grades})
 
 
+def modify_student(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    if request.method == 'POST' and is_ajax:
+        data = json.loads(request.body)
+        student_id = data.get('id')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        email = data.get('email')
+
+        # Modify the student information
+        # TODO: Update the student in the database
+        # services_student.update_student(student_id, first_name, last_name, email)
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+
 def de_enroll_courses(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
