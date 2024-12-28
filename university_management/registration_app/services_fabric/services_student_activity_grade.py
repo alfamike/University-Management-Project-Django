@@ -1,13 +1,8 @@
-from registration_app.services_fabric.services_fabric import get_fabric_client
 import json
-import uuid
 
 from django.db import models
 
-from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
-    services_student_activity_grade, services_student_course_grade
 from registration_app.services_fabric.services_activity import Activity
-from registration_app.services_fabric.services_course import Course
 from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
 from registration_app.services_fabric.services_student import Student
 
@@ -29,7 +24,9 @@ class StudentActivityGrade(models.Model):
     def save(self, *args, **kwargs):
         client = get_fabric_client()
 
-        existing_student_activity_grade = StudentActivityGrade.get_student_activity_grade(str(self.pk))
+        existing_student_activity_grade = (StudentActivityGrade.
+                                           get_student_activity_grade_by_params(str(self.student.primary_key),
+                                                                                str(self.activity.primary_key)))
 
         if existing_student_activity_grade is not None:
             response = invoke_chaincode(
@@ -81,6 +78,22 @@ class StudentActivityGrade(models.Model):
             'student_activity_grade_cc',
             'GetStudentActivityGrade',
             [student_activity_grade_id]
+        )
+
+        student_activity_grade = json.loads(response)
+        student_activity_grade = cls(student=Student.get_student(student_activity_grade['student_id']),
+                                     activity=Activity.get_activity(student_activity_grade['activity_id']),
+                                     grade=student_activity_grade['grade'])
+        return student_activity_grade
+
+    @classmethod
+    def get_student_activity_grade_by_params(cls, student_id, activity_id):
+        client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            'student_activity_grade_cc',
+            'GetStudentActivityGradeByParams',
+            [student_id, activity_id]
         )
 
         student_activity_grade = json.loads(response)

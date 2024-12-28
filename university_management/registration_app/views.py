@@ -9,11 +9,13 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from registration_app.services_fabric import services_student, services_course
 from .forms.form_course import CourseForm
 from .forms.form_student import StudentForm
 from .forms.form_title import TitleForm
-from .models import Student, Course
+from .services_fabric.services_activity import Activity
+from .services_fabric.services_course import Course
+from .services_fabric.services_student import Student
+from .services_fabric.services_student_course_grade import StudentCourseGrade
 
 
 # login_hug("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")
@@ -129,7 +131,7 @@ def student_list(request):
 
     # Prepare the students list
     # TODO
-    # students = services_student.get_all_students()
+    # students = Student.all()
     students = [
         {
             "id": 1,
@@ -199,11 +201,11 @@ def student_list(request):
 
     # Filter by title if provided
     if title_filter:
-        students = services_student.get_students_by_title(title_filter)
+        students = Student.get_students_by_title(title_filter)
 
     # Filter by course if provided
     if course_filter:
-        students = services_student.get_students_by_course(course_filter)
+        students = Student.get_students_by_course(course_filter)
 
     # Pagination setup
     paginator = Paginator(students, 5)  # 25 students per page
@@ -216,7 +218,7 @@ def student_list(request):
 
     # Get filters for titles and courses
     # TODO
-    # titles = services_title.get_all_titles()
+    # titles = Title.all()
     titles = [
         {"id": 1, "name": "Master in Artificial Intelligence"},
         {"id": 2, "name": "Master in Data Analytics"},
@@ -225,7 +227,7 @@ def student_list(request):
     ]
 
     # Todo
-    # courses = services_course.get_all_courses()
+    # courses = Course.all()
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -244,9 +246,9 @@ def student_list(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if is_ajax:
-        # Only return the filtered students' list in JSON format
         student_data = []
         for student in page_obj:
+            # TODO: Update the student data to match the actual model fields
             student_data.append({
                 'id': student.id,
                 'first_name': student.first_name,
@@ -273,7 +275,7 @@ def student_list(request):
 
 def title_list(request):
     # TODO
-    # titles = services_title.get_all_titles()
+    # titles = Title.all()
     titles = [
         {
             "name": "Master in Artificial Intelligence",
@@ -307,6 +309,7 @@ def title_list(request):
     if is_ajax:
         titles_data = []
         for title in page_obj:
+            # TODO: Update the title data to match the actual model fields
             titles_data.append({
                 'name': title["name"],
                 'description': title["description"]
@@ -329,7 +332,7 @@ def title_list(request):
 
 def course_list(request):
     # Todo
-    # courses = services_course.get_all_courses()
+    # courses = Course.all()
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -351,7 +354,7 @@ def course_list(request):
 
     # Get filters for titles
     # TODO
-    # titles = services_title.get_all_titles()
+    # titles = Title.all()
     titles = [
         {"id": 1, "name": "Master in Artificial Intelligence"},
         {"id": 2, "name": "Master in Data Analytics"},
@@ -361,10 +364,11 @@ def course_list(request):
 
     # If invalid or empty, reset to None
     title_filter = None if title_filter in [None, '', 'None'] else title_filter
+    year_filter = None if year_filter in [None, '', 'None'] else year_filter
 
     # Filter by title and year if provided
     if title_filter or year_filter:
-        courses = services_course.get_courses_by_title_year(title_filter, year_filter)
+        courses = Course.get_courses_by_title_year(title_filter, year_filter)
 
     # Filter for years
     years = list(range(2024, 2031))
@@ -381,9 +385,9 @@ def course_list(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if is_ajax:
-        # Only return the filtered courses' list in JSON format
         course_data = []
         for course in page_obj:
+            # TODO: Update the course data to match the actual model fields
             course_data.append({
                 'id': course["id"],
                 'name': course["name"],
@@ -422,10 +426,10 @@ def student_record(request, pk):
              "start_date": "2024-02-15", "end_date": "2024-06-30"}, ]}
 
     # TODO
-    # student = services_student.query_student(pk)
+    # student = Student.get_student(pk)
 
     # Todo
-    # courses = services_course.get_all_courses()
+    # courses = StudentCourse.get_courses_by_student(pk)
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -451,7 +455,7 @@ def student_record(request, pk):
     ]
 
     # TODO
-    # course_grades = services_student_course_grades.get_student_course_grades(pk)
+    # course_grades = StudentCourseGrade.get_student_course_grades(pk)
     course_grades = [
         {"id": 1, "course_id": 1, "grade": 90},
         {"id": 2, "course_id": 2, "grade": 85},
@@ -460,7 +464,7 @@ def student_record(request, pk):
     ]
 
     # TODO
-    # activities_grades = services_student_activity_grades.get_student_activity_grades(pk)
+    # activities_grades = StudentActivityGrade.get_student_activity_grades(pk)
     activities_grades = [
         {"id": 1, "student": 5, "activity": 1, "grade": 90},
         {"id": 2, "student": 5, "activity": 2, "grade": 85},
@@ -483,11 +487,18 @@ def modify_student(request):
         last_name = data.get('last_name')
         email = data.get('email')
 
-        # Modify the student information
-        # TODO: Update the student in the database
-        # services_student.update_student(student_id, first_name, last_name, email)
-
-        return JsonResponse({'status': 'success'})
+        try:
+            student = Student.get_student(student_id)
+            if student:
+                student.first_name = first_name
+                student.last_name = last_name
+                student.email = email
+                student.save()
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'failed', 'message': 'Student not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'failed', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'failed'}, status=400)
 
 
@@ -498,9 +509,7 @@ def delete_student(request):
         data = json.loads(request.body)
         student_id = data.get('id')
 
-        # Delete the student
-        # TODO: Delete the student from the database
-        # services_student.update_student(student_id, is_deleted=True)
+        Student.delete(student_id)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
 
@@ -511,8 +520,9 @@ def de_enroll_courses(request):
     if request.method == 'POST' and is_ajax:
         data = json.loads(request.body)
         course_ids = data.get('course_ids', [])
-        # student = data.get('pk', None)
-        # services_student.de_enroll_courses(student, course_ids)
+        student = data.get('pk', None)
+
+        Student.de_enroll_student_in_course(student, course_ids)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
 
@@ -523,12 +533,13 @@ def enroll_courses(request):
     if request.method == 'POST' and is_ajax:
         data = json.loads(request.body)
         course_ids = data.get('course_ids', [])
-        # student = data.get('pk', None)
-        # services_student.enroll_courses(student, course_ids)
+        student = data.get('pk', None)
+        Student.enroll_student_in_course(student, course_ids)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
 
 
+# TODO Remove after testing
 def get_activities_by_course_of_activity_grades(request):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
@@ -576,8 +587,7 @@ def manage_grade_to_course(request):
         grade = int(data.get('grade'))
 
         # TODO
-        # services_student_course_grade.upsert_student_course_grade({'student_id': student_id, 'course_id': course_id,
-        # 'grade': grade})
+        StudentCourseGrade(student_id=student_id, course_id=course_id, grade=grade).save()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
@@ -585,14 +595,14 @@ def manage_grade_to_course(request):
 
 def course_record(request, pk):
     # Todo
-    # course = services_course.query_course(pk)
+    # course = Course.get_course(pk)
     course = {"id": 4, "name": "Machine Learning Basics",
               "description": "An introduction to machine learning concepts and algorithms.", "start_date": "2024-04-05",
               "end_date": "2024-08-20", "title": 4}
 
     # Fetch the related activities
     # TODO
-    # activities = services_activity.get_activities_by_course(pk)
+    # activities = Activity.get_activities_by_course(pk)
     activities = [
         {"id": 1, "name": "Assignment 1", "description": "Complete the first assignment.",
          "due_date": "2024-01-20", "course": 1},
@@ -621,8 +631,7 @@ def manage_grade_to_activity(request):
         grade = int(data.get('grade'))
 
         # TODO
-        # services_student_activity_grade.upsert_student_activity_grade({'student_id': student_id,
-        #  'activity_id': activity_id, 'grade': grade})
+        # StudentActivityGrade(student_id=student_id, activity_id=activity_id, grade=grade).save()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
@@ -640,8 +649,7 @@ def create_activity(request):
 
         # Create the new activity
         # TODO
-        # services_activity.create_activity({'name': name, 'description': description,
-        # 'due_date': due_date, course_id: course_id})
+        Activity(name=name, description=description, due_date=due_date, course_id=course_id).save()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
@@ -657,7 +665,7 @@ def remove_activity(request):
         # Remove the selected activities
         # TODO
         # for activity in activity_ids:
-        # services_activity.update_activity(activity.activity_id, is_deleted=True)
+        #  Activity.get_activity(activity['id']).delete()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
@@ -675,7 +683,16 @@ def modify_activity(request):
 
         # Modify the activity
         # TODO: Update the activity in the database
-        # services_activity.update_activity(activity_id, name, description, due_date)
 
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'}, status=400)
+        try:
+            activity = Activity.get_activity(activity_id)
+            if activity:
+                activity.name = name
+                activity.description = description
+                activity.due_date = due_date
+                activity.save()
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'failed', 'message': 'Student not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'failed', 'message': str(e)}, status=400)
