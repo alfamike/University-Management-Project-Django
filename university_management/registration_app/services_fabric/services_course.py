@@ -1,12 +1,7 @@
-from registration_app.services_fabric.services_fabric import get_fabric_client
-from django.db.models import QuerySet
-from django.apps import apps
-from registration_app.services_fabric.services_fabric import get_fabric_client
 import json
-import uuid
+
 from django.db import models
-from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
-    services_student_activity_grade, services_student_course_grade
+
 from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
 from registration_app.services_fabric.services_title import Title
 
@@ -99,7 +94,7 @@ class Course(models.Model):
         return course
 
     @classmethod
-    def get_courses_by_title_year(cls, year):
+    def get_courses_by_title_year(cls, title_id, year):
 
         client = get_fabric_client()
 
@@ -107,7 +102,7 @@ class Course(models.Model):
             client,
             'course_cc',
             'GetCoursesByTitleYear',
-            [year]
+            [title_id, year]
         )
 
         courses = json.loads(response)['courses']
