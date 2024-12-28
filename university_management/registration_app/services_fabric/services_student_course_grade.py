@@ -1,79 +1,117 @@
 from registration_app.services_fabric.services_fabric import get_fabric_client
+import json
+import uuid
+
+from django.db import models
+
+from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
+    services_student_activity_grade, services_student_course_grade
+from registration_app.services_fabric.services_activity import Activity
+from registration_app.services_fabric.services_course import Course
+from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_student import Student
 
 
-def upsert_student_course_grade(grade_data):
-    fabric_client = get_fabric_client()
+class StudentCourseGrade(models.Model):
+    student = models.ForeignKey(Student, related_name='course_grades', on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, related_name='student_grades', on_delete=models.CASCADE)
+    grade = models.DecimalField(max_digits=4, decimal_places=2)
+    is_deleted = models.BooleanField(default=False)
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['student', 'course'], name='unique_student_course')
+        ]
 
-    student_id = grade_data['student_id']
-    course_id = grade_data['course_id']
-    grade = grade_data['grade']
+    def __str__(self):
+        return f"{self.student} - {self.course}: {self.grade}"
 
-    response = channel.chaincode_invoke(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='UpsertStudentCourseGrade',  # Función en el Chaincode
-        args=[student_id, course_id, str(grade)],
-        transient_map={},
-        wait_for_event=True
-    )
+    def save(self, *args, **kwargs):
+        client = get_fabric_client()
 
-    return response
+        existing_student_course_grade = StudentCourseGrade.get_student_course_grade(str(self.pk))
 
+        if existing_student_course_grade is not None:
+            response = invoke_chaincode(
+                client,
+                'student_course_grade_cc',
+                'UpdateStudentCourseGrade',
+                [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), str(self.grade)]
+            )
+        else:
+            response = invoke_chaincode(
+                client,
+                'student_course_grade_cc',
+                'CreateStudentCourseGrade',
+                [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), str(self.grade)]
+            )
+        return response
 
-def query_student_course_grade(student_id, course_id):
-    fabric_client = get_fabric_client()
+    def delete(self, *args, **kwargs):
+        client = get_fabric_client()
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
+        response = invoke_chaincode(
+            client,
+            'student_course_grade_cc',
+            'UpdateStudentCourseGrade',
+            [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), 'true']
+        )
+        return response
 
-    response = channel.chaincode_query(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='QueryStudentActivityGrade',  # Función en el Chaincode
-        args=[student_id, course_id]
-    )
+    @classmethod
+    def get_student_course_grade(cls, student_course_grade_id):
+        client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            'student_course_grade_cc',
+            'GetStudentCourseGrade',
+            [student_course_grade_id]
+        )
+        return response
 
-    return response
+    @classmethod
+    def all(cls):
+        client = get_fabric_client()
+        response = query_chaincode(client, 'student_course_grade_cc', 'GetAllStudentCourseGrades', [])
 
+        student_course_grades = json.loads(response)['student_course_grades']
+        student_course_grades_res = []
+        for student_course_grade in student_course_grades:
+            student_course_grades_res.append(cls(student=Student.get_student(student_course_grade['student_id']),
+                                                 course=Course.get_course(student_course_grade['course_id']),
+                                                 grade=student_course_grade['grade']))
+        return student_course_grades_res
 
-def get_all_student_course_grades(student_id):
-    fabric_client = get_fabric_client()
+    @classmethod
+    def get_student_course_grades(cls, student_id):
+        client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            'student_course_grade_cc',
+            'GetStudentCourseGrades',
+            [student_id]
+        )
+        student_course_grades = json.loads(response)['student_course_grades']
+        student_course_grades_res = []
+        for student_course_grade in student_course_grades:
+            student_course_grades_res.append(cls(student=Student.get_student(student_course_grade['student_id']),
+                                                 course=Course.get_course(student_course_grade['course_id']),
+                                                 grade=student_course_grade['grade']))
+        return student_course_grades_res
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
-
-    response = channel.chaincode_query(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='GetAllStudentCourseGrades',  # Función en el Chaincode
-        args=[student_id]
-    )
-
-    return response
-
-
-def get_student_course_grades(student_id):
-    fabric_client = get_fabric_client()
-
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
-
-    response = channel.chaincode_query(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='GetStudentCourseGrades',  # Función en el Chaincode
-        args=[student_id]
-    )
-
-    return response
+    @classmethod
+    def get_course_student_grades(cls, course_id):
+        client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            'student_course_grade_cc',
+            'GetCourseStudentGrades',
+            [course_id]
+        )
+        student_course_grades = json.loads(response)['student_course_grades']
+        student_course_grades_res = []
+        for student_course_grade in student_course_grades:
+            student_course_grades_res.append(cls(student=Student.get_student(student_course_grade['student_id']),
+                                                 course=Course.get_course(student_course_grade['course_id']),
+                                                 grade=student_course_grade['grade']))
+        return student_course_grades_res

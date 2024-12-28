@@ -1,102 +1,120 @@
 from registration_app.services_fabric.services_fabric import get_fabric_client
+from django.db.models import QuerySet
+from django.apps import apps
+from registration_app.services_fabric.services_fabric import get_fabric_client
+import json
+import uuid
+from django.db import models
+from registration_app.services_fabric import services_title, services_course, services_student, services_activity, \
+    services_student_activity_grade, services_student_course_grade
+from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_title import Title
 
 
-def create_course(course_data):
-    fabric_client = get_fabric_client()
+class Course(models.Model):
+    title = models.ForeignKey(Title, related_name='courses', on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_deleted = models.BooleanField(default=False)
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
+    def __str__(self):
+        return f"{self.name} ({self.title})"
 
-    course_id = course_data['id']
-    title_id = course_data['title_id']
-    name = course_data['name']
-    description = course_data['description']
-    start_date = course_data['start_date']
-    end_date = course_data['end_date']
+    def save(self, *args, **kwargs):
 
-    response = channel.chaincode_invoke(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='CreateCourse',  # Función en el Chaincode
-        args=[course_id, title_id, name, description, start_date, end_date],
-        transient_map={},
-        wait_for_event=True
-    )
+        client = get_fabric_client()
 
-    return response
+        existing_course = Course.get_course(str(self.pk))
 
+        if existing_course is not None:
+            response = invoke_chaincode(
+                client,
+                chaincode_name='course_cc',
+                function='UpdateCourse',
+                args=[str(self.pk), str(self.title.primary_key), self.name, self.description or '',
+                      str(self.start_date), str(self.end_date)]
+            )
+        else:
+            response = invoke_chaincode(
+                client,
+                chaincode_name='course_cc',
+                function='CreateCourse',
+                args=[str(self.pk), str(self.title.pk), self.name, self.description or '', str(self.start_date),
+                      str(self.end_date)]
+            )
+        return response
 
-def query_course(course_id):
-    fabric_client = get_fabric_client()
+    def delete(self, *args, **kwargs):
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
+        client = get_fabric_client()
 
-    response = channel.chaincode_query(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='QueryCourse',  # Función en el Chaincode
-        args=[course_id]
-    )
+        response = invoke_chaincode(
+            client,
+            chaincode_name='course_cc',
+            function='UpdateCourse',
+            args=[str(self.pk), str(self.title.primary_key), self.name, self.description or '', str(self.start_date),
+                  str(self.end_date), 'true']
+        )
+        return response
 
-    return response
+    @classmethod
+    def all(cls):
 
+        client = get_fabric_client()
 
-def update_course(course_id, new_title_id, new_name, new_description, new_start_date, new_end_date):
-    fabric_client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            chaincode_name='course_cc',
+            function='GetAllCourses',
+            args=[]
+        )
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
+        courses = json.loads(response)['courses']
+        courses_res = []
+        for course in courses:
+            courses_res.append(cls(title=Title.get_title(course['title_id']), name=course['name'],
+                               description=course['description'], start_date=course['start_date'],
+                               end_date=course['end_date']))
 
-    response = channel.chaincode_invoke(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='UpdateCourse',  # Función en el Chaincode
-        args=[course_id, new_title_id, new_name, new_description, new_start_date, new_end_date],
-        transient_map={},
-        wait_for_event=True
-    )
+        return courses_res
 
-    return response
+    @classmethod
+    def get_course(cls, course_id):
 
+        client = get_fabric_client()
 
-def get_all_courses():
-    fabric_client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            chaincode_name='course_cc',
+            function='QueryCourse',
+            args=[course_id]
+        )
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
+        course = json.loads(response)
+        course = cls(title=Title.get_title(course['title_id']), name=course['name'],
+                     description=course['description'],
+                     start_date=course['start_date'], end_date=course['end_date'])
+        return course
 
-    response = channel.chaincode_query(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='GetAllCourses',  # Función en el Chaincode
-        args=[]
-    )
+    @classmethod
+    def get_courses_by_title_year(cls, year):
 
-    return response
+        client = get_fabric_client()
 
+        response = query_chaincode(
+            client,
+            'course_cc',
+            'GetCoursesByTitleYear',
+            [year]
+        )
 
-def get_courses_by_title_year(title_id, year):
-    fabric_client = get_fabric_client()
+        courses = json.loads(response)['courses']
+        courses_res = []
+        for course in courses:
+            courses_res.append(cls(title=Title.get_title(course['title_id']), name=course['name'],
+                               description=course['description'], start_date=course['start_date'],
+                               end_date=course['end_date']))
 
-    # Cargar el canal y la identidad del usuario
-    channel = fabric_client.get_channel('mychannel')
-    admin_user = fabric_client.get_user('Org1', 'Admin')
-
-    response = channel.chaincode_query(
-        requestor=admin_user,
-        channel_name='mychannel',
-        chaincode_name='mycc',  # Nombre de tu Chaincode
-        fcn='GetCoursesByTitle',  # Función en el Chaincode
-        args=[title_id, year]
-    )
-
-    return response
+        return courses_res

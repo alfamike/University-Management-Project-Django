@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from registration_app.models import Student
+from registration_app.services_fabric.services_student import Student
 
 
 class StudentForm(forms.ModelForm):

@@ -1,7 +1,6 @@
 from django import forms
 
-from registration_app.models import Course
-from registration_app.services_fabric import services_title
+from registration_app.services_fabric.services_course import Course
 
 
 class CourseForm(forms.ModelForm):
