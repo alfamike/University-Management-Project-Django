@@ -61,7 +61,7 @@
         {% for student in page_obj %}
             <div class="card">
                 <div class="card-content">
-                    <h3 class="card-title">{{ student.first_name }} {{ student.last_name }}</h3>
+                    <h3 class="card-title"><a href="{% url 'student_record' student.id %}">{{ student.first_name }} {{ student.last_name }}</a></h3>
                     <p class="card-email">{{ student.email }}</p>
                 </div>
             </div>

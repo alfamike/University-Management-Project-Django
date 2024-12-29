@@ -65,7 +65,7 @@
         {% for course in page_obj %}
         <div class="card">
             <div class="card-content">
-                <h3 class="card-title">{{ course.name }}</h3>
+                <h3 class="card-title"><a href="{% url 'course_record' course.id %}">{{ course.name }}</a></h3>
                 <p class="card-description">{{ course.description }}</p>
             </div>
         </div>
