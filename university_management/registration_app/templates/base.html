@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>{% block title %}{% endblock %}</title>
@@ -60,6 +61,7 @@
         {% block content %}
         <!-- Page specific content goes here -->
         {% endblock %}
+        {% block extra_js %}{% endblock %}
     </div>
 </div>
 

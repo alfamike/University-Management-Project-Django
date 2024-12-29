@@ -171,14 +171,7 @@ def student_list(request):
 
 
 def student_record(request, pk):
-    student = {
-        'id': 5, 'first_name': 'Michael', 'last_name': 'Brown', 'email': 'michael.brown@example.com', 'courses': [
-            {"id": 1, "name": "Introduction to Programming",
-             "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
-             "end_date": "2024-05-10"},
-            {"id": 2, "name": "Advanced Web Development",
-             "description": "Explore advanced concepts in web development with Django and React.",
-             "start_date": "2024-02-15", "end_date": "2024-06-30"}, ]}
+    student = {'id': 5, 'first_name': 'Michael', 'last_name': 'Brown', 'email': 'michael.brown@example.com'}
 
     # TODO
     # student = Student.get_student(pk)
