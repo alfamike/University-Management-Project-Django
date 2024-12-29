@@ -678,7 +678,7 @@
 
     document.getElementById('delete-student-btn').addEventListener('click', function() {
         if (confirm('Are you sure you want to delete this student?')) {
-            fetch(`/deleteStudent/`, {
+            fetch(`/removeStudent/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -692,7 +692,7 @@
                 if (data.status === 'success') {
                     window.location.href = '/students/'; // Redirect to the students list page
                 } else {
-                    alert('Failed to delete student.');
+                    alert('Failed to remove student.');
                 }
             })
             .catch(error => console.error('Error:', error));
