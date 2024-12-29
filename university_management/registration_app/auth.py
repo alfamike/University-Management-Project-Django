@@ -1,14 +1,14 @@
-import os
 import binascii
+import json
+import os
+from datetime import datetime, timedelta
+
+import jwt
+from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from eth_account.messages import encode_defunct
 from web3 import Web3
-import os
-import jwt
-import json
-from datetime import datetime, timedelta
-from django.conf import settings
 
 NONCE_STORAGE = {}  # Temporary storage for nonces
 
