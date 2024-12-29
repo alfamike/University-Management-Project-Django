@@ -17,7 +17,7 @@
         <tbody id="title-list">
             {% for title in page_obj %}
                 <tr>
-                    <td>{{ title.name }}</td>
+                    <td><a href="{% url 'title_record' title.id %}">{{ title.name }}</a></td>
                     <td>{{ title.description }}</td>
                 </tr>
             {% empty %}
@@ -33,7 +33,7 @@
         {% for title in page_obj %}
             <div class="card">
                 <div class="card-content">
-                    <h3 class="card-title">{{ title.name }}</h3>
+                    <h3 class="card-title"><a href="{% url 'title_record' title.id %}">{{ title.name }}</a></h3>
                     <p class="card-description">{{ title.description }}</p>
                 </div>
             </div>
