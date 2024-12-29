@@ -13,7 +13,7 @@ class StudentCourse(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['student', 'course'], name='unique_student_course')
+            models.UniqueConstraint(fields=['student', 'course'], name='unique_student_course_grade')
         ]
 
     def __str__(self):

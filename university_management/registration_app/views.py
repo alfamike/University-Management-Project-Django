@@ -1,9 +1,6 @@
 import json
 
-from django.contrib import messages
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -42,27 +39,14 @@ from .services_fabric.services_student_course_grade import StudentCourseGrade
 #
 #     return render(request, 'templates/query_llama.html')
 
-
-def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-            else:
-                messages.error(request, "Usuario o contraseña incorrectos.")
-        else:
-            messages.error(request, "Usuario o contraseña incorrectos.")
-    else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+def login(request):
+    return render(request, 'registration/login.html')
 
 
-@login_required
+def logout(request):
+    return redirect('login')
+
+
 def home(request):
     return render(request, 'home.html')
 

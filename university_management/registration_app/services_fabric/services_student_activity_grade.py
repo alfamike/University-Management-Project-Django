@@ -15,7 +15,7 @@ class StudentActivityGrade(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['student', 'activity'], name='unique_student_activity')
+            models.UniqueConstraint(fields=['student', 'activity'], name='unique_student_activity_grade')
         ]
 
     def __str__(self):
