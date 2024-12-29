@@ -34,7 +34,9 @@ def login(request):
 
 
 def logout(request):
-    return redirect('login')
+    response = redirect('login')
+    response.delete_cookie('auth-token')
+    return response
 
 
 def home(request):
