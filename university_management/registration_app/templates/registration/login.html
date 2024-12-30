@@ -5,72 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <style>
-        /* General style */
-        body, html {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            color: #337ab7;
-            background-color: #8cd1e7;
-        }
-
-        /* Main container to center all vertically */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100%;
-        }
-
-        /* Form container */
-        .login-container {
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* Title */
-        .login-container h1 {
-            font-size: 1.8rem;
-            color: #337ab7;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Button */
-        button {
-            background-color: #337ab7;
-            color: #fff;
-            font-size: 1rem;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #8cd1e7;
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 2rem;
-            font-size: 0.8rem;
-            color: #337ab7;
-            text-align: center;
-        }
-    </style>
+    {% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+    {% endblock %}
 </head>
 <body>
     <div class="main-container">
@@ -84,51 +21,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
-    <script>
-        async function authenticate() {
-            if (!window.ethereum) {
-                alert("Please install a wallet like MetaMask.");
-                return;
-            }
 
-            const web3 = new Web3(window.ethereum);
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await web3.eth.getAccounts();
-            const userAddress = accounts[0];
-
-            const response = await fetch('/get_nonce/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ address: userAddress })
-            });
-
-
-            const responseData = await response.json();
-            if (responseData.error) {
-                console.error("Error fetching nonce:", responseData.error);
-                return;
-            }
-
-            const nonce = responseData.nonce;
-            const signature = await web3.eth.personal.sign(nonce, userAddress, '');
-
-            const verificationResponse = await fetch('/verify_signature/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ address: userAddress, signature: signature })
-            });
-
-            const result = await verificationResponse.json();
-            if (result.success) {
-                console.log("Authentication successful");
-                localStorage.setItem('auth_token', result.access_token);
-                window.location.href = '/';
-            } else {
-                console.error("Authentication failed:", result.error);
-            }
-        }
-
-        document.getElementById('wallet-login-btn').addEventListener('click', authenticate);
-    </script>
+    {% block extra_js %}
+    <script type='application/javascript' src="{% static 'js/login.js' %}"></script>
+    {% endblock %}
 </body>
 </html>
