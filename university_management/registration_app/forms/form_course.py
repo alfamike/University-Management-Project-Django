@@ -1,6 +1,8 @@
 from django import forms
+from django.db.models import QuerySet
 
 from registration_app.services_fabric.services_course import Course
+from registration_app.services_fabric.services_title import Title
 
 
 class CourseForm(forms.ModelForm):
@@ -9,7 +11,7 @@ class CourseForm(forms.ModelForm):
         fields = ['title', 'name', 'description', 'start_date', 'end_date']
 
     # title = forms.ModelChoiceField(
-    #     queryset=services_title.get_all_titles_queryset(),
+    #     queryset=Title.all(),
     #     widget=forms.Select(attrs={'class': 'form-control'}),
     #     empty_label="Select a Title"
     # )
