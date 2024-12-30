@@ -1,5 +1,3 @@
-version: '2'
-
 volumes:
   orderer.university.eu:
   peer0.org1.university.eu:

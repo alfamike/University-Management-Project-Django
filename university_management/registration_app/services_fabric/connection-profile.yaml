@@ -3,28 +3,33 @@ version: 1.0.0
 client:
   organization: Org1
   credentials:
-    certificate: /path/to/certificate.pem
-    private_key: /path/to/private_key.pem
+    certificate: /path/to/certificate.pem # Crypto config folder
+    private_key: /path/to/private_key.pem # Crypto config folder
   connection:
     timeout: 60
 
 channels:
   mychannel:
     orderers:
-      - orderer.example.com:7050
+      - orderer.university.eu:7050
     peers:
-      - peer0.org1.example.com:7051
+      - peer0.org1.university.eu:7051
+      - peer1.org1.university.eu:8051
 
 organizations:
   Org1:
     mspid: Org1MSP
     peers:
-      - peer0.org1.example.com
+      - peer0.org1.university.eu
+      - peer1.org1.university.eu
 
 orderers:
-  orderer.example.com:
-    url: grpc://localhost:7050
+  orderer.university.eu:
+    url: grpc://orderer.university.eu:7050
 
 peers:
-  peer0.org1.example.com:
-    url: grpc://localhost:7051
+  peer0.org1.university.eu:
+    url: grpc://peer0.org1.university.eu:7051
+
+  peer1.org1.university.eu:
+    url: grpc://peer1.org1.university.eu:8051
