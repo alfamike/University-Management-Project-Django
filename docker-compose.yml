@@ -1,0 +1,112 @@
+version: '2'
+
+volumes:
+  orderer.university.eu:
+  peer0.org1.university.eu:
+  peer1.org1.university.eu:
+  ca.org1.university.eu:
+
+services:
+  ca.org1.university.eu:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.org1.university.eu
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.university.eu-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.university.eu-key.pem
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/org1.university.eu/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.org1.university.eu
+    networks:
+      - university_network
+
+  orderer.university.eu:
+    image: hyperledger/fabric-orderer:latest
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls:/var/hyperledger/orderer/tls
+      - orderer.university.eu:/var/hyperledger/production/orderer
+    ports:
+      - "7050:7050"
+    container_name: orderer.university.eu
+    networks:
+      - university_network
+
+  peer0.org1.university.eu:
+    image: hyperledger/fabric-peer:latest
+    environment:
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=university_network
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer0.org1.university.eu
+      - CORE_PEER_ADDRESS=peer0.org1.university.eu:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.university.eu:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.university.eu:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.university.eu:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls:/etc/hyperledger/fabric/tls
+        - peer0.org1.university.eu:/var/hyperledger/production
+    ports:
+      - "7051:7051"
+      - "7052:7052"
+    container_name: peer0.org1.university.eu
+    networks:
+      - university_network
+
+  peer1.org1.university.eu:
+    image: hyperledger/fabric-peer:latest
+    environment:
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=university_network
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer1.org1.university.eu
+      - CORE_PEER_ADDRESS=peer1.org1.university.eu:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.org1.university.eu:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.university.eu:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.university.eu:8051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/tls:/etc/hyperledger/fabric/tls
+        - peer1.org1.university.eu:/var/hyperledger/production
+    ports:
+      - "8051:8051"
+      - "8052:8052"
+    container_name: peer1.org1.university.eu
+    networks:
+      - university_network
+
+networks:
+  university_network:
+    name: university_network
+    driver: bridge
