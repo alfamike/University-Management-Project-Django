@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from django.db import models
 
@@ -7,6 +8,7 @@ from registration_app.services_fabric.services_fabric import query_chaincode, ge
 
 
 class Activity(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     course = models.ForeignKey(Course, related_name='activities', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

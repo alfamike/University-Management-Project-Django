@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from django.db import models
 
@@ -7,6 +8,7 @@ from registration_app.services_fabric.services_title import Title
 
 
 class Course(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.ForeignKey(Title, related_name='courses', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
@@ -36,7 +38,8 @@ class Course(models.Model):
                 client,
                 chaincode_name='course_cc',
                 function='CreateCourse',
-                args=[str(self.pk), str(self.title.pk), self.name, self.description or '', str(self.start_date),
+                args=[str(self.pk), str(self.title.primary_key), self.name, self.description or '',
+                      str(self.start_date),
                       str(self.end_date)]
             )
         return response

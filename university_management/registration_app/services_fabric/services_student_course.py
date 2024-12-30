@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from django.db import models
 
@@ -8,6 +9,7 @@ from registration_app.services_fabric.services_student import Student
 
 
 class StudentCourse(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(Student, related_name='courses', on_delete=models.CASCADE)
     course = models.ForeignKey(Course, related_name='students', on_delete=models.CASCADE)
 
