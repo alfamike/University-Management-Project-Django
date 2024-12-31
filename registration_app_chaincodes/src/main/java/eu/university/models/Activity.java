@@ -1,14 +1,24 @@
 package eu.university.models;
 
+import org.hyperledger.fabric.contract.annotation.DataType;
+import org.hyperledger.fabric.contract.annotation.Property;
+
 import java.util.Date;
 import java.util.UUID;
 
+@DataType
 public class Activity {
+    @Property
     private final UUID id;
+    @Property
     private Course course;
+    @Property
     private String name;
+    @Property
     private String description;
+    @Property
     private Date due_date;
+    @Property
     private boolean is_deleted;
 
     public Activity(UUID id, Course course, String name, String description, Date due_date) {

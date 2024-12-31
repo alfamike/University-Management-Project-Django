@@ -1,12 +1,21 @@
 package eu.university.models;
 
+import org.hyperledger.fabric.contract.annotation.DataType;
+import org.hyperledger.fabric.contract.annotation.Property;
+
 import java.util.UUID;
 
+@DataType
 public class StudentCourse {
+    @Property
     private final UUID id;
+    @Property
     private Student student;
+    @Property
     private Course course;
+    @Property
     private double grade;
+    @Property
     private boolean is_deleted;
 
     public StudentCourse(UUID id, Student student, Course course, double grade) {
