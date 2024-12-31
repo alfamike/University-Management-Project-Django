@@ -12,6 +12,8 @@ class StudentCourse(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(Student, related_name='courses', on_delete=models.CASCADE)
     course = models.ForeignKey(Course, related_name='students', on_delete=models.CASCADE)
+    grade = models.DecimalField(max_digits=4, decimal_places=2, default=0)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -25,21 +27,25 @@ class StudentCourse(models.Model):
 
         client = get_fabric_client()
 
-        existing_student_course = StudentCourse.get_student_course(str(self.pk))
+        existing_student_course = (
+            StudentCourse.get_student_course_by_params(
+                str(self.student.primary_key), str(self.course.primary_key)))
 
         if existing_student_course is not None:
             response = invoke_chaincode(
                 client,
                 'student_course_cc',
                 'UpdateStudentCourse',
-                [str(self.pk), str(self.student.primary_key), str(self.course.primary_key)]
+                [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), self.grade,
+                 self.is_deleted]
             )
         else:
             response = invoke_chaincode(
                 client,
                 'student_course_cc',
                 'CreateStudentCourse',
-                [str(self.pk), str(self.student.primary_key), str(self.course.primary_key)]
+                [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), self.grade,
+                 self.is_deleted]
             )
 
         return response
@@ -52,7 +58,8 @@ class StudentCourse(models.Model):
             client,
             'student_course_cc',
             'UpdateStudentCourse',
-            [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), 'true']
+            [str(self.pk), str(self.student.primary_key), str(self.course.primary_key), self.grade,
+             'true']
         )
         return response
 
@@ -70,7 +77,8 @@ class StudentCourse(models.Model):
         student_courses_res = []
         for student_course in student_courses:
             student_courses_res.append(cls(student=Student.get_student(student_course['student_id']),
-                                           course=Course.get_course(student_course['course_id'])))
+                                           course=Course.get_course(student_course['course_id']),
+                                           grade=student_course['grade']))
         return student_courses_res
 
     @classmethod
@@ -114,5 +122,16 @@ class StudentCourse(models.Model):
         )
         student_course = json.loads(response)
         student_course = cls(student=Student.get_student(student_course['student_id']),
-                             course=Course.get_course(student_course['course_id']))
+                             course=Course.get_course(student_course['course_id']), grade=student_course['grade'])
         return student_course
+
+    @classmethod
+    def get_student_course_by_params(cls, student_id, course_id):
+        client = get_fabric_client()
+        response = query_chaincode(
+            client,
+            'student_course_cc',
+            'GetStudentCourseByParams',
+            [student_id, course_id]
+        )
+        return response

@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from registration_app.forms.form_course import CourseForm
 from registration_app.services_fabric.services_course import Course
-from registration_app.services_fabric.services_student_course_grade import StudentCourseGrade
+from registration_app.services_fabric.services_student_course import StudentCourse
 
 
 def create_course(request):
@@ -188,7 +188,7 @@ def manage_grade_to_course(request):
         grade = int(data.get('grade'))
 
         # TODO
-        StudentCourseGrade(student_id=student_id, course_id=course_id, grade=grade).save()
+        StudentCourse(student_id=student_id, course_id=course_id, grade=grade).save()
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)

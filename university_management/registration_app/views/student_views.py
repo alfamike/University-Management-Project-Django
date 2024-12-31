@@ -203,7 +203,7 @@ def student_record(request, pk):
     ]
 
     # TODO
-    # course_grades = StudentCourseGrade.get_student_course_grades(pk)
+    # course_grades = StudentCourse.get_courses_by_student(pk)
     course_grades = [
         {"id": 1, "course_id": 1, "grade": 90},
         {"id": 2, "course_id": 2, "grade": 85},
