@@ -30,7 +30,7 @@ Organizations:
         Rule: "OR('Org1MSP.admin')"
 
 Orderer: &OrdererDefaults
-  OrdererType: solo
+  OrdererType: raft
   Addresses:
     - orderer.university.eu:7050
   BatchTimeout: 2s
@@ -48,9 +48,9 @@ Orderer: &OrdererDefaults
     Admins:
       Type: Signature
       Rule: "OR('OrdererMSP.admin')"
-    BlockValidation:  # Add the BlockValidation policy here
+    BlockValidation:  
       Type: Signature
-      Rule: "OR('OrdererMSP.admin')"  # This policy can be changed to suit your needs
+      Rule: "OR('OrdererMSP.admin')"
 
 Application: &ApplicationDefaults
   Organizations:
