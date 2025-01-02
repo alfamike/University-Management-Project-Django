@@ -3,6 +3,8 @@ volumes:
   peer0.org1.university.eu:
   peer1.org1.university.eu:
   ca.org1.university.eu:
+  couchdb0.org1.university.eu:
+  couchdb1.org1.university.eu:
 
 services:
   ca.org1.university.eu:
@@ -63,14 +65,33 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.university.eu:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.university.eu:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0.org1.university.eu:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     volumes:
-        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/msp:/etc/hyperledger/fabric/msp
-        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls:/etc/hyperledger/fabric/tls
-        - peer0.org1.university.eu:/var/hyperledger/production
+      - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls:/etc/hyperledger/fabric/tls
+      - peer0.org1.university.eu:/var/hyperledger/production
     ports:
       - "7051:7051"
       - "7052:7052"
     container_name: peer0.org1.university.eu
+    depends_on:
+      - couchdb0.org1.university.eu
+    networks:
+      - university_network
+
+  couchdb0.org1.university.eu:
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - "5984:5984"
+    volumes:
+      - couchdb0.org1.university.eu:/opt/couchdb/data
+    container_name: couchdb0.org1.university.eu
     networks:
       - university_network
 
@@ -93,14 +114,50 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.university.eu:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.university.eu:8051
       - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1.org1.university.eu:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     volumes:
-        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/msp:/etc/hyperledger/fabric/msp
-        - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/tls:/etc/hyperledger/fabric/tls
-        - peer1.org1.university.eu:/var/hyperledger/production
+      - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/tls:/etc/hyperledger/fabric/tls
+      - peer1.org1.university.eu:/var/hyperledger/production
     ports:
       - "8051:8051"
       - "8052:8052"
     container_name: peer1.org1.university.eu
+    depends_on:
+      - couchdb1.org1.university.eu
+    networks:
+      - university_network
+
+  couchdb1.org1.university.eu:
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - "5985:5984"
+    volumes:
+      - couchdb1.org1.university.eu:/opt/couchdb/data
+    container_name: couchdb1.org1.university.eu
+    networks:
+      - university_network
+  
+  django:
+    image: python:3.11
+    container_name: django_app
+    volumes: ./university_management:/app
+    working_dir: /app
+    command: >
+      bash -c "pip install --no-cache-dir -r requirements.txt &&
+               python manage.py runserver" 
+    ports:
+      - "8000:8000"
+    depends_on:
+      - orderer.university.eu
+      - peer0.org1.university.eu
+      - peer1.org1.university.eu
     networks:
       - university_network
 
