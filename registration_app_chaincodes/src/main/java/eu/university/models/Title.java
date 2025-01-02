@@ -5,6 +5,7 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.UUID;
@@ -23,14 +24,16 @@ public class Title {
     private String description;
     @Property
     @JsonProperty("is_deleted")
-    private boolean is_deleted;
+    private boolean is_deleted = false;
+    @Property
+    @JsonProperty("metatype")
+    private final String metatype = "Title";
 
     @JsonCreator
     public Title(UUID id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.is_deleted = false;
     }
 
     public Title(){
@@ -70,8 +73,10 @@ public class Title {
         return objectMapper.writeValueAsString(this);
     }
 
-    public static Title fromJSONString(String jsonString) throws IOException {
+    public static Title fromJSONString(String jsonString) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+
         return objectMapper.readValue(jsonString, Title.class);
+
     }
 }
