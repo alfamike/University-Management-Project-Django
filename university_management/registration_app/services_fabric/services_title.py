@@ -25,15 +25,15 @@ class Title(models.Model):
             response = invoke_chaincode(
                 client,
                 chaincode_name='title_cc',
-                function='UpdateTitle',
-                args=[str(self.pk), self.name, self.description or '']
+                function='updateTitle',
+                args=[self.pk, self.name, self.description or '']
             )
         else:
             response = invoke_chaincode(
                 client,
                 chaincode_name='title_cc',
-                function='CreateTitle',
-                args=[str(self.pk), self.name, self.description or '']
+                function='createTitle',
+                args=[self.pk, self.name, self.description or '']
             )
         return response
 
@@ -44,8 +44,8 @@ class Title(models.Model):
         response = invoke_chaincode(
             client,
             chaincode_name='title_cc',
-            function='UpdateTitle',
-            args=[str(self.pk), self.name, self.description or '', 'true']
+            function='deleteTitle',
+            args=[self.pk]
         )
         return response
 
@@ -57,7 +57,7 @@ class Title(models.Model):
         response = query_chaincode(
             client,
             chaincode_name='title_cc',
-            function='GetAllTitles',
+            function='queryAllTitles',
             args=[]
         )
 
