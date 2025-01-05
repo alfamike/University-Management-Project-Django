@@ -4,16 +4,15 @@ from registration_app import auth
 from registration_app.views import general_views, student_views, course_views, title_views, activity_views
 
 urlpatterns = [
+    # Front
+    path('', general_views.login, name='login'),
+
     # Home
-    path('', general_views.home, name='home'),
+    path('home/', general_views.home, name='home'),
 
     # Login
-    path('login/', general_views.login, name='login'),
+    path('login/', auth.login_auth, name='login_auth'),
     path('logout/', general_views.logout, name='logout'),
-
-    # Auth
-    path('get_nonce/', auth.get_nonce, name='nonce'),
-    path('verify_signature/', auth.verify_signature, name='verify_signature'),
 
     # Chat
     path('chat/', general_views.chat_view, name='chat'),

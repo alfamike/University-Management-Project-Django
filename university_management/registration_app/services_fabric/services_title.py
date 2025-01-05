@@ -3,7 +3,8 @@ import uuid
 
 from django.db import models
 
-from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode, \
+    FabricClientSingleton
 
 
 class Title(models.Model):
@@ -17,13 +18,16 @@ class Title(models.Model):
 
     def save(self, *args, **kwargs):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         existing_title = Title.get_title(str(self.pk))
 
         if existing_title is not None:
             response = invoke_chaincode(
                 client,
+                user,
                 chaincode_name='title_cc',
                 function='updateTitle',
                 args=[self.pk, self.name, self.description or '']
@@ -39,10 +43,13 @@ class Title(models.Model):
 
     def delete(self, *args, **kwargs):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             chaincode_name='title_cc',
             function='deleteTitle',
             args=[self.pk]
@@ -52,10 +59,13 @@ class Title(models.Model):
     @classmethod
     def all(cls):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             chaincode_name='title_cc',
             function='queryAllTitles',
             args=[]
@@ -71,10 +81,13 @@ class Title(models.Model):
     @classmethod
     def get_title(cls, title_id):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             chaincode_name='title_cc',
             function='QueryTitle',
             args=[title_id]

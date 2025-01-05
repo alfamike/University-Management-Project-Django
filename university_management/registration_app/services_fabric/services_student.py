@@ -3,7 +3,8 @@ import uuid
 
 from django.db import models
 
-from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode, \
+    FabricClientSingleton
 
 
 class Student(models.Model):
@@ -17,13 +18,16 @@ class Student(models.Model):
         return f"{self.first_name} {self.last_name}"
 
     def save(self, *args, **kwargs):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         existing_student = Student.get_student(str(self.pk))
 
         if existing_student is not None:
             response = invoke_chaincode(
                 client,
+                user,
                 'student_cc',
                 'UpdateStudent',
                 [str(self.pk), self.first_name, self.last_name, self.email]
@@ -31,6 +35,7 @@ class Student(models.Model):
         else:
             response = invoke_chaincode(
                 client,
+                user,
                 'student_cc',
                 'CreateStudent',
                 [str(self.pk), self.first_name, self.last_name, self.email]
@@ -39,10 +44,13 @@ class Student(models.Model):
 
     def delete(self, *args, **kwargs):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             'student_cc',
             'UpdateStudent',
             [str(self.pk), self.first_name, self.last_name, self.email, 'true']
@@ -51,10 +59,13 @@ class Student(models.Model):
 
     @classmethod
     def all(cls):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'student_cc',
             'GetAllStudents',
             []
@@ -69,10 +80,13 @@ class Student(models.Model):
 
     @classmethod
     def get_student(cls, student_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'student_cc',
             'QueryStudent',
             [student_id]
@@ -84,10 +98,13 @@ class Student(models.Model):
 
     @classmethod
     def get_students_by_title(cls, title_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'student_cc',
             'GetStudentsByTitle',
             [title_id]
@@ -102,10 +119,13 @@ class Student(models.Model):
 
     @classmethod
     def get_students_by_course(cls, course_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'student_cc',
             'GetStudentsByCourse',
             [course_id]
@@ -120,10 +140,13 @@ class Student(models.Model):
 
     @classmethod
     def enroll_student_in_course(cls, students_id, course_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             'student_cc',
             'EnrollStudentsInCourse',
             [students_id, course_id]
@@ -133,10 +156,13 @@ class Student(models.Model):
 
     @classmethod
     def de_enroll_student_in_course(cls, students_id, courses_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             'student_cc',
             'DeEnrollStudentsInCourse',
             [students_id, courses_id]

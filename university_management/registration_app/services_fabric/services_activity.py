@@ -4,7 +4,8 @@ import uuid
 from django.db import models
 
 from registration_app.services_fabric.services_course import Course
-from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode, \
+    FabricClientSingleton
 
 
 class Activity(models.Model):
@@ -19,13 +20,16 @@ class Activity(models.Model):
         return f"{self.name} ({self.course})"
 
     def save(self, *args, **kwargs):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         existing_activity = Activity.get_activity(str(self.pk))
 
         if existing_activity is not None:
             response = invoke_chaincode(
                 client,
+                user,
                 'activity_cc',
                 'UpdateActivity',
                 [str(self.pk), str(self.course.primary_key), self.name, self.description or '', str(self.due_date)]
@@ -33,6 +37,7 @@ class Activity(models.Model):
         else:
             response = invoke_chaincode(
                 client,
+                user,
                 'activity_cc',
                 'CreateActivity',
                 [str(self.pk), str(self.course.primary_key), self.name, self.description or '', str(self.due_date)]
@@ -40,10 +45,13 @@ class Activity(models.Model):
         return response
 
     def delete(self, *args, **kwargs):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             'activity_cc',
             'UpdateActivity',
             [str(self.pk), str(self.course.primary_key), self.name, self.description or '', str(self.due_date), 'true']
@@ -52,10 +60,13 @@ class Activity(models.Model):
 
     @classmethod
     def all(cls):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'activity_cc',
             'GetAllActivities',
             []
@@ -71,10 +82,13 @@ class Activity(models.Model):
 
     @classmethod
     def get_activity(cls, activity_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'activity_cc',
             'QueryActivity',
             [activity_id]
@@ -88,10 +102,13 @@ class Activity(models.Model):
 
     @classmethod
     def get_activities_by_course(cls, course_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'activity_cc',
             'GetActivitiesByCourse',
             [course_id]

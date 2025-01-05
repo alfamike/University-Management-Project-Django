@@ -3,7 +3,8 @@ import uuid
 
 from django.db import models
 
-from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode, \
+    FabricClientSingleton
 from registration_app.services_fabric.services_title import Title
 
 
@@ -21,13 +22,16 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         existing_course = Course.get_course(str(self.pk))
 
         if existing_course is not None:
             response = invoke_chaincode(
                 client,
+                user,
                 chaincode_name='course_cc',
                 function='UpdateCourse',
                 args=[str(self.pk), str(self.title.primary_key), self.name, self.description or '',
@@ -36,6 +40,7 @@ class Course(models.Model):
         else:
             response = invoke_chaincode(
                 client,
+                user,
                 chaincode_name='course_cc',
                 function='CreateCourse',
                 args=[str(self.pk), str(self.title.primary_key), self.name, self.description or '',
@@ -46,10 +51,13 @@ class Course(models.Model):
 
     def delete(self, *args, **kwargs):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             chaincode_name='course_cc',
             function='UpdateCourse',
             args=[str(self.pk), str(self.title.primary_key), self.name, self.description or '', str(self.start_date),
@@ -60,10 +68,13 @@ class Course(models.Model):
     @classmethod
     def all(cls):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             chaincode_name='course_cc',
             function='GetAllCourses',
             args=[]
@@ -81,10 +92,13 @@ class Course(models.Model):
     @classmethod
     def get_course(cls, course_id):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             chaincode_name='course_cc',
             function='QueryCourse',
             args=[course_id]
@@ -99,10 +113,13 @@ class Course(models.Model):
     @classmethod
     def get_courses_by_title_year(cls, title_id, year):
 
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'course_cc',
             'GetCoursesByTitleYear',
             [title_id, year]

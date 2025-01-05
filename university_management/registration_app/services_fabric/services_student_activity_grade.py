@@ -4,7 +4,8 @@ import uuid
 from django.db import models
 
 from registration_app.services_fabric.services_activity import Activity
-from registration_app.services_fabric.services_fabric import query_chaincode, get_fabric_client, invoke_chaincode
+from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode, \
+    FabricClientSingleton
 from registration_app.services_fabric.services_student import Student
 
 
@@ -24,7 +25,9 @@ class StudentActivityGrade(models.Model):
         return f"{self.student} - {self.activity}: {self.grade}"
 
     def save(self, *args, **kwargs):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         existing_student_activity_grade = (StudentActivityGrade.
                                            get_student_activity_grade_by_params(str(self.student.primary_key),
@@ -33,6 +36,7 @@ class StudentActivityGrade(models.Model):
         if existing_student_activity_grade is not None:
             response = invoke_chaincode(
                 client,
+                user,
                 'student_activity_grade_cc',
                 'UpdateStudentActivityGrade',
                 [str(self.pk), str(self.student.primary_key), str(self.activity.primary_key), str(self.grade)]
@@ -40,6 +44,7 @@ class StudentActivityGrade(models.Model):
         else:
             response = invoke_chaincode(
                 client,
+                user,
                 'student_activity_grade_cc',
                 'CreateStudentActivityGrade',
                 [str(self.pk), str(self.student.primary_key), str(self.activity.primary_key), str(self.grade)]
@@ -47,10 +52,13 @@ class StudentActivityGrade(models.Model):
         return response
 
     def delete(self, *args, **kwargs):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = invoke_chaincode(
             client,
+            user,
             'student_activity_grade_cc',
             'UpdateStudentActivityGrade',
             [str(self.pk), str(self.student.primary_key), str(self.activity.primary_key), 'true']
@@ -59,8 +67,11 @@ class StudentActivityGrade(models.Model):
 
     @classmethod
     def all(cls):
-        client = get_fabric_client()
-        response = query_chaincode(client, 'student_activity_grade_cc', 'GetAllStudentActivityGrades', [])
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
+
+        response = query_chaincode(client, user, 'student_activity_grade_cc', 'GetAllStudentActivityGrades', [])
 
         student_activities_grades = json.loads(response)['student_activities_grades']
         student_activities_grades_res = []
@@ -74,9 +85,13 @@ class StudentActivityGrade(models.Model):
 
     @classmethod
     def get_student_activity_grade(cls, student_activity_grade_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
+
         response = query_chaincode(
             client,
+            user,
             'student_activity_grade_cc',
             'GetStudentActivityGrade',
             [student_activity_grade_id]
@@ -90,9 +105,12 @@ class StudentActivityGrade(models.Model):
 
     @classmethod
     def get_student_activity_grade_by_params(cls, student_id, activity_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
         response = query_chaincode(
             client,
+            user,
             'student_activity_grade_cc',
             'GetStudentActivityGradeByParams',
             [student_id, activity_id]
@@ -106,10 +124,13 @@ class StudentActivityGrade(models.Model):
 
     @classmethod
     def get_student_activity_grades(cls, student_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'student_activity_grade_cc',
             'GetStudentActivityGrades',
             [student_id]
@@ -127,10 +148,13 @@ class StudentActivityGrade(models.Model):
 
     @classmethod
     def get_activity_student_grades(cls, activity_id):
-        client = get_fabric_client()
+        fabric_client_singleton = FabricClientSingleton()
+        client = fabric_client_singleton.get_client()
+        user = fabric_client_singleton.get_user()
 
         response = query_chaincode(
             client,
+            user,
             'student_activity_grade_cc',
             'GetActivityStudentGrades',
             [activity_id]
