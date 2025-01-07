@@ -173,11 +173,13 @@ services:
     container_name: nginx_proxy
     ports:
       - "443:443"
+      - "80:80"
     depends_on:
       - django
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/certs:/etc/nginx/certs
+      - ./university_management/staticfiles:/etc/nginx/static
     networks:
       - university_network
 
