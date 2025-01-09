@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-1z=+&8r2_gkbkgf1v9j$^)^&6sut0(1z=-&a_+!hig-8!=jygw'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'nginx']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'registration_app.middleware.JWTAuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -101,10 +102,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
@@ -127,10 +124,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Production
 CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_HSTS_SECONDS = 2592000  # 30 days
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

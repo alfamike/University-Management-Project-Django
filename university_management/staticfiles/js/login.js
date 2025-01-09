@@ -35,19 +35,7 @@ async function authenticate() {
     if (result.success) {
         console.log("Authentication successful");
         localStorage.setItem('auth_token', result.access_token);
-
-        const fabricResponse = await fetch('/initFabric/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-        });
-        const resultFabric = await fabricResponse.json()
-        if (resultFabric.sucess){
-            window.location.href = '/home';
-        } else {
-            console.error("Connection to Hyperledge Fabric failed:", result.error);
-        }
-
+        window.location.href = '/home';
     } else {
         console.error("Authentication failed:", result.error);
     }

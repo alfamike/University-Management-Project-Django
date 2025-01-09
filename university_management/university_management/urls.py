@@ -11,8 +11,12 @@ urlpatterns = [
     path('home/', general_views.home, name='home'),
 
     # Login
-    path('login/', auth.login_auth, name='login_auth'),
     path('logout/', general_views.logout, name='logout'),
+
+    # Auth
+    path('get_nonce/', auth.get_nonce, name='nonce'),
+    path('verify_signature/', auth.verify_signature, name='verify_signature'),
+    path('initFabric/', general_views.init_fabric, name='init_fabric'),
 
     # Chat
     path('chat/', general_views.chat_view, name='chat'),

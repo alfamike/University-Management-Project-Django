@@ -12,7 +12,6 @@ cffi==1.17.1
 charset-normalizer==3.4.0
 ckzg==2.0.1
 colorama==0.4.6
-CouchDB==1.2
 cryptography==43.0.3
 cytoolz==1.0.1
 Django==5.1.2

@@ -3,6 +3,9 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+from registration_app.services_fabric.services_fabric import FabricClientSingleton
 
 
 # login_hug("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")
@@ -34,10 +37,8 @@ def login(request):
 
 
 def logout(request):
-    request.session.flush()
-
     response = redirect('')
-
+    response.delete_cookie('auth-token')
     return response
 
 
@@ -64,3 +65,30 @@ def chat_view(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@csrf_exempt
+def init_fabric(request):
+    try:
+        singleton = FabricClientSingleton(user_cn="User1")
+
+        # Check if the client and user are properly initialized
+        client = singleton.get_client()
+        user = singleton.get_user()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Fabric client initialized correctly for user: {}'.format(user.get_name())
+        })
+
+    except ValueError as e:
+        return JsonResponse({
+            'error': str(e),
+            'message': 'Failed to initialize Fabric client or user.'
+        }, status=400)
+
+    except Exception as e:
+        return JsonResponse({
+            'error': 'An unexpected error occurred.',
+            'message': str(e)
+        }, status=500)
