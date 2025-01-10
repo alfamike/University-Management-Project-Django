@@ -40,11 +40,11 @@ Before starting the network, generate the required cryptographic materials and c
    ```
 2. Generate the genesis block:
    ```bash
-   configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock ./channel-artifacts/genesis.block
+   configtxgen -profile OrdererGenesis -channelID system-channel -outputBlock ./channel-artifacts/genesis.block
    ```
 3. Create the channel configuration transaction:
    ```bash
-   configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID universitychannel
+   configtxgen -profile RegistrationAppChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID registrtion-channel
    ```
 
 ### Step 2: Start the Network
