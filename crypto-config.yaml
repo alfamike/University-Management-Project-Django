@@ -3,11 +3,26 @@ OrdererOrgs:
     Domain: university.eu
     Specs:
       - Hostname: orderer
-
+      
 PeerOrgs:
   - Name: Org1
     Domain: org1.university.eu
     Template:
       Count: 2
     Users:
-      Count: 1
+      Count: 2
+    EnableNodeOUs: true
+    FabricNodeOUs:
+      Enable: true
+      ClientOUIdentifier:
+        Certificate: cacerts/ca.org1.university.eu-cert.pem
+        OrganizationalUnitIdentifier: client
+      PeerOUIdentifier:
+        Certificate: cacerts/ca.org1.university.eu-cert.pem
+        OrganizationalUnitIdentifier: peer
+      AdminOUIdentifier:
+        Certificate: cacerts/ca.org1.university.eu-cert.pem
+        OrganizationalUnitIdentifier: admin
+      OrdererOUIdentifier:
+        Certificate: cacerts/ca.org1.university.eu-cert.pem
+        OrganizationalUnitIdentifier: orderer

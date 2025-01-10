@@ -1,0 +1,25 @@
+version: 1.0.0
+ca:
+  name: ca.org1.university.eu
+  keyfile: ./priv_sk
+  certfile: ./ca.org1.university.eu-cert.pem
+  tls:
+    enabled: true
+    certfile: ./ca.org1.university.eu-cert.pem
+    keyfile: ./priv_sk
+  affiliation: ""
+  maxEnrollments: -1
+  registry:
+    identities:
+      - name: admin
+        pass: adminpw
+        type: user
+      - name: user
+        pass: userpw
+        type: user
+      - name: client
+        pass: clientpw
+        type: client
+      - name: couch
+        pass: couchpw
+        type: client

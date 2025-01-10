@@ -30,9 +30,9 @@ Organizations:
         Rule: "OR('Org1MSP.admin')"
 
 Orderer: &OrdererDefaults
-  OrdererType: raft
+  OrdererType: etcdraft
   Addresses:
-    - orderer.university.eu:7050
+    - orderer.university.eu:7050  # Single Orderer node
   BatchTimeout: 2s
   BatchSize:
     MaxMessageCount: 10
@@ -48,12 +48,25 @@ Orderer: &OrdererDefaults
     Admins:
       Type: Signature
       Rule: "OR('OrdererMSP.admin')"
-    BlockValidation:  
+    BlockValidation:
       Type: Signature
       Rule: "OR('OrdererMSP.admin')"
+  EtcdRaft:
+    Consenters:
+      - Host: orderer.university.eu
+        Port: 7050
+        ClientTLSCert: crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls/server.crt
+        ServerTLSCert: crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls/server.crt
+    Options:
+      TickInterval: 500ms
+      ElectionTick: 10
+      HeartbeatTick: 1
+      MaxInflightBlocks: 5
+      SnapshotIntervalSize: 20 MB
 
 Application: &ApplicationDefaults
   Organizations:
+    - *Org1
   Policies:
     Readers:
       Type: Signature
