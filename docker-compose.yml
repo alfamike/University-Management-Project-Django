@@ -66,7 +66,7 @@ services:
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.org1.university.eu:7052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.university.eu:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.university.eu:8051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.university.eu:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
@@ -87,15 +87,22 @@ services:
       - university_network
 
   couchdb0.org1.university.eu:
-    image: couchdb:latest
+    image: hyperledger/fabric-couchdb:latest
     environment:
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=adminpw
+      - COUCHDB_BIND_ADDRESS=0.0.0.0
+      - COUCHDB_PORT_NUMBER=6984
+      - COUCHDB_TLS=enable
+      - COUCHDB_TLS_CERT_FILE=/opt/couchdb/cert/server.crt
+      - COUCHDB_TLS_KEY_FILE=/opt/couchdb/cert/server.key
+      - COUCHDB_TLS_CA_FILE=/opt/couchdb/cert/ca.crt
     expose:
       - 5984
     volumes:
       - couchdb0.org1.university.eu:/opt/couchdb/data
     container_name: couchdb0.org1.university.eu
+    hostname: couchdb0.org1.university.eu
     networks:
       - university_network
 
@@ -119,7 +126,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.university.eu:8051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1.org1.university.eu:5985
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1.org1.university.eu:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     volumes:
@@ -136,15 +143,18 @@ services:
       - university_network
 
   couchdb1.org1.university.eu:
-    image: couchdb:latest
+    image: hyperledger/fabric-couchdb:latest
     environment:
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=adminpw
+      - COUCHDB_BIND_ADDRESS=0.0.0.0
+      - COUCHDB_PORT_NUMBER=5984
     expose:
-      - 5985
+      - 5984
     volumes:
       - couchdb1.org1.university.eu:/opt/couchdb/data
     container_name: couchdb1.org1.university.eu
+    hostname: couchdb1.org1.university.eu
     networks:
       - university_network
   
@@ -156,7 +166,7 @@ services:
     working_dir: /app
     command: >
       bash -c "pip install -r requirements.txt &&
-               python manage.py runserver" 
+               python manage.py runserver_plus 0.0.0.0:8000 --cert-file /app/registration_app/auth/django.crt --key-file /app/registration_app/auth/django.key" 
     ports:
       - "8000:8000"
     depends_on:
