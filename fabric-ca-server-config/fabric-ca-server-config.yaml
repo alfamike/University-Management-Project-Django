@@ -7,16 +7,21 @@ ca:
     enabled: true
     certfile: ./ca.org1.university.eu-cert.pem
     keyfile: ./priv_sk
-  affiliation: ""
+  affiliations:
+    org1:
+      - peer
+      - admin
+      - client
+      - orderer
   maxEnrollments: -1
 registry:
   identities:
     - name: admin
       pass: adminpw
-      type: user
+      type: admin
     - name: user
       pass: userpw
-      type: user
+      type: client
     - name: django
       pass: djangopw
       type: client
