@@ -10,13 +10,13 @@ services:
   ca.org1.university.eu:
     image: hyperledger/fabric-ca:latest
     environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server-config
       - FABRIC_CA_SERVER_CA_NAME=ca.org1.university.eu
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.university.eu-cert.pem
       - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
-    expose:
-      - 7054
+    ports:
+      - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ./fabric-ca-server-config:/etc/hyperledger/fabric-ca-server-config
@@ -70,7 +70,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.university.eu:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0.org1.university.eu:6984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0.org1.university.eu:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=couch
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=couchpw
     volumes:
@@ -92,15 +92,17 @@ services:
       - COUCHDB_USER=couch
       - COUCHDB_PASSWORD=couchpw
       - COUCHDB_BIND_ADDRESS=0.0.0.0
-      - COUCHDB_PORT_NUMBER=6984
+      - COUCHDB_PORT_NUMBER=5984
       - COUCHDB_TLS=enable
-      - COUCHDB_TLS_CERT_FILE=/opt/couchdb/cert/couchdb.crt
-      - COUCHDB_TLS_KEY_FILE=/opt/couchdb/cert/couchdb.key
+      - COUCHDB_TLS_CERT_FILE=/opt/couchdb/cert/couch0.crt
+      - COUCHDB_TLS_KEY_FILE=/opt/couchdb/cert/couch0.key
       - COUCHDB_TLS_CA_FILE=/opt/couchdb/cert/ca.university.eu-cert.pem
-    expose:
-      - "6984:6984"
+    ports:
+      - "5984:5984"
+      - "6984:5984"
     volumes:
       - couchdb0.org1.university.eu:/opt/couchdb/data
+      - ./certs:/opt/couchdb/cert
     container_name: couchdb0.org1.university.eu
     hostname: couchdb0.org1.university.eu
     networks:
@@ -126,7 +128,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.university.eu:8051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1.org1.university.eu:6984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1.org1.university.eu:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=couch
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=couchpw
     volumes:
@@ -148,15 +150,17 @@ services:
       - COUCHDB_USER=couch
       - COUCHDB_PASSWORD=couchpw
       - COUCHDB_BIND_ADDRESS=0.0.0.0
-      - COUCHDB_PORT_NUMBER=6984
+      - COUCHDB_PORT_NUMBER=5984
       - COUCHDB_TLS=enable
-      - COUCHDB_TLS_CERT_FILE=/opt/couchdb/cert/couchdb.crt
-      - COUCHDB_TLS_KEY_FILE=/opt/couchdb/cert/couchdb.key
+      - COUCHDB_TLS_CERT_FILE=/opt/couchdb/cert/couch1.crt
+      - COUCHDB_TLS_KEY_FILE=/opt/couchdb/cert/couch1.key
       - COUCHDB_TLS_CA_FILE=/opt/couchdb/cert/ca.university.eu-cert.pem
-    expose:
-      - "6984:6984"
+    ports:
+      - "5985:5984"
+      - "6985:5984"
     volumes:
       - couchdb1.org1.university.eu:/opt/couchdb/data
+      - ./certs:/opt/couchdb/cert
     container_name: couchdb1.org1.university.eu
     hostname: couchdb1.org1.university.eu
     networks:
