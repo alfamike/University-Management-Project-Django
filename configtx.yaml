@@ -32,7 +32,7 @@ Organizations:
 Orderer: &OrdererDefaults
   OrdererType: etcdraft
   Addresses:
-    - orderer.university.eu:7050  # Single Orderer node
+    - orderer.university.eu:7050
   BatchTimeout: 2s
   BatchSize:
     MaxMessageCount: 10
