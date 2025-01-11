@@ -93,7 +93,8 @@ services:
     volumes:
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls:/etc/hyperledger/fabric/tls
-      - ./crypto-config/ordererOrganizations/university.eu/tlsca:/etc/hyperledger/fabric/orderer/tls
+      - ./crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./channel-artifacts/registration-channel.block:/etc/hyperledger/fabric/registration-channel.block
       - peer0.org1.university.eu:/var/hyperledger/production
     expose:
       - 7051
@@ -153,7 +154,8 @@ services:
     volumes:
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/tls:/etc/hyperledger/fabric/tls
-      - ./crypto-config/ordererOrganizations/university.eu/tlsca:/etc/hyperledger/fabric/orderer/tls
+      - ./crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls:/etc/hyperledger/fabric/orderer/tls
+      - ./channel-artifacts/registration-channel.block:/etc/hyperledger/fabric/registration-channel.block
       - peer1.org1.university.eu:/var/hyperledger/production
     expose:
       - 8051
