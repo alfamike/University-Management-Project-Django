@@ -42,7 +42,7 @@ async function authenticate() {
             body: JSON.stringify({})
         });
         const resultFabric = await fabricResponse.json()
-        if (resultFabric.sucess){
+        if (resultFabric.success){
             window.location.href = '/home';
         } else {
             console.error("Connection to Hyperledge Fabric failed:", result.error);
