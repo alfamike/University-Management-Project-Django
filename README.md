@@ -24,12 +24,17 @@ The network includes:
 
 ```
 .
-├── crypto-config/          # Cryptographic material
-├── channel-artifacts/      # Genesis block and channel configuration
-├── university_management/  # Django application code
-├── certs/                  # Certificates for CouchDB and Django
-├── docker-compose.yml      # Docker Compose configuration
-└── README.md               # This README file
+├── crypto-config/               # Cryptographic material
+├── channel-artifacts/           # Genesis block and channel configuration
+├── university_management/       # Django application code
+├── certs/                       # Certificates for CouchDB and Django
+├── docker-compose.yml           # Docker Compose configuration
+├── fabric-ca-server-config/     # CA server configuration
+├── registration_app_chaincodes  # Java chaincodes
+├── scripts                      # Additional configuration scripts
+├── configtx.yaml                # Network policies
+├── crypto-config.yaml           # Configuration for generating cryptographic material
+└── README.md                    # This README file
 ```
 
 ## Setting Up the Network
@@ -46,14 +51,14 @@ Before starting the network, generate the required cryptographic materials and c
    ```
 3. Create the channel configuration transaction:
    ```bash
-   configtxgen -profile RegistrationAppChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID registrtion-channel
+   configtxgen -profile RegistrationAppChannel -outputBlock ./channel-artifacts/registration-channel.block -channelID registration-channel
    ```
 4. Prepare for creation of clients for the Django app and the CouchDB instances
    ```bash
    export FABRIC_CA_CLIENT_HOME=$PWD/ca-client
    export FABRIC_CA_CLIENT_TLS_CERTFILES=$PWD/fabric-ca-server-config/ca.org1.university.eu-cert.pem
    ```
-   Disable TLS in CA Server and re-run docker-compose file
+   Temporary: Disable TLS in CA Server and re-run docker-compose file (To be fixed in next releases)
 5. Enroll an admin user
    ```bash
    fabric-ca-client enroll -u http://admin:adminpw@localhost:7054
@@ -75,16 +80,8 @@ Run the following command to bring up the network:
 docker-compose up -d
 ```
 
-### Step 3: Set Up the Channel
-Once the network is running:
-1. Create the channel:
-   ```bash
-   docker exec -it cli peer channel create -o orderer.university.eu:7050 -c registration_app -f ./channel-artifacts/channel.tx --tls --cafile /etc/hyperledger/orderer/tls/ca.crt
-   ```
-2. Join peers to the channel:
-   ```bash
-   docker exec -it cli peer channel join -b registration_app.block
-   ```
+### Step 3: Join peers to the channel
+Thanks to the cli service included in docker-compose.yml a script will be executed to create the channel and make the peers join the registration-channel.
 
 ### Step 4: Launch Django Application
 The Django application interacts with the blockchain network. It will be available at `https://localhost:8000`. Certificates are used to secure communication.
@@ -98,6 +95,7 @@ https://localhost:8000
 
 | Service Name                   | Description                     | Port |
 |--------------------------------|---------------------------------|------|
+| `cli`                          | CLI Tools                       |      |
 | `ca.org1.university.eu`        | Certification Authority         | 7054 |
 | `orderer.university.eu`        | Orderer Node                    | 7050 |
 | `peer0.org1.university.eu`     | Peer Node 0                     | 7051 |
@@ -109,7 +107,7 @@ https://localhost:8000
 ## Stopping the Network
 To stop and clean up the network, run:
 ```bash
-docker-compose down -v
+docker-compose down
 ```
 
 ## Logs and Debugging

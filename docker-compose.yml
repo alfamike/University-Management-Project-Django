@@ -14,6 +14,8 @@ services:
       - CORE_PEER_ADDRESS=peer0.org1.university.eu:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls/ca.crt
     volumes:
       - ./channel-artifacts:/etc/hyperledger/fabric/channel-artifacts
       - ./crypto-config:/etc/hyperledger/fabric/crypto-config
@@ -93,8 +95,7 @@ services:
     volumes:
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls:/etc/hyperledger/fabric/tls
-      - ./crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls:/etc/hyperledger/fabric/orderer/tls
-      - ./channel-artifacts/registration-channel.block:/etc/hyperledger/fabric/registration-channel.block
+      - ./channel-artifacts:/etc/hyperledger/fabric/channel-artifacts
       - peer0.org1.university.eu:/var/hyperledger/production
     expose:
       - 7051
@@ -154,8 +155,7 @@ services:
     volumes:
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/tls:/etc/hyperledger/fabric/tls
-      - ./crypto-config/ordererOrganizations/university.eu/orderers/orderer.university.eu/tls:/etc/hyperledger/fabric/orderer/tls
-      - ./channel-artifacts/registration-channel.block:/etc/hyperledger/fabric/registration-channel.block
+      - ./channel-artifacts:/etc/hyperledger/fabric/channel-artifacts
       - peer1.org1.university.eu:/var/hyperledger/production
     expose:
       - 8051
