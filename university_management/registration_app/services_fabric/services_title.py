@@ -17,10 +17,22 @@ class Title(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-
+        print("Entering save method of Title...")
         fabric_client_singleton = FabricClientSingleton.get_instance()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+
+        try:
+            client = fabric_client_singleton.get_client()
+            print("Fabric client retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric client: {e}")
+            raise
+
+        try:
+            user = fabric_client_singleton.get_user()
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
 
         existing_title = Title.get_title(str(self.pk))
 
@@ -35,6 +47,7 @@ class Title(models.Model):
         else:
             response = invoke_chaincode(
                 client,
+                user,
                 chaincode_name='title_cc',
                 function='createTitle',
                 args=[self.pk, self.name, self.description or '']

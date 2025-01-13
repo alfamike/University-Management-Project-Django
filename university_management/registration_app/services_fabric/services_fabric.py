@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import traceback
 from threading import Lock
 from hfc.fabric import Client
 from hfc.fabric_ca.caservice import Enrollment
@@ -20,15 +21,15 @@ class FabricClientSingleton:
 
     @classmethod
     def get_instance(cls):
-        if not cls._instance:
-            instance = cls.__new__(cls)
-            instance.init_client()
-            instance._initialized = True
-            cls._instance = instance
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super(FabricClientSingleton, cls).__new__(cls)
+                cls._instance.init_client()
+                cls._instance._initialized = True
         return cls._instance
 
     def init_client(self):
-        if not self._fabric_client:
+        try:
             new_wallet = wallet.FileSystenWallet('crypto_store/wallet')
 
             # Identity creation
@@ -64,10 +65,14 @@ class FabricClientSingleton:
                 'certificate': cert_data.decode('utf-8')
             })
 
-            state_store.set_value('Admin@Org1', enrollment)
+            # state_store.set_value('Admin@Org1', enrollment)
 
             # User creation
-            admin = User('Admin', 'Org1', state_store)
+            if not state_store.get_value('user.Admin.Org1'):
+                admin = User('Admin', 'Org1', state_store)
+            else:
+                admin = state_store.get_value('user.Admin.Org1')
+
             self._user = admin
 
             # Client setup
@@ -82,23 +87,26 @@ class FabricClientSingleton:
                 os.path.dirname(__file__),
                 'connection-profile.json'
             )
+
+            if not os.path.exists(connection_profile_path):
+                raise FileNotFoundError(f"Connection profile not found at {connection_profile_path}")
+
             self._fabric_client = Client(net_profile=connection_profile_path)
 
-            # Ensure the event loop is closed properly if needed
-            if not loop.is_running():
-                loop.close()
+            if not self._fabric_client:
+                raise RuntimeError("Fabric client is None after initialization."+ traceback.format_exc() )
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to initialize Fabric client: {e}")
 
     def get_client(self):
-        if not self._fabric_client:
-            raise ValueError("Fabric client is not initialized.")
+        if not self._initialized or not self._fabric_client:
+            raise ValueError("Fabric client is not initialized." + "get_client" + traceback.format_exc())
         return self._fabric_client
 
-    def set_user(self, user_cn):
-        self._user = self._fabric_client.get_user(org_name='Org1', name=user_cn)
-
     def get_user(self):
-        if not self._user:
-            raise ValueError("No user set")
+        if not self._initialized or not self._fabric_client:
+            raise ValueError("Fabric client is not initialized." + "get_user" + traceback.format_exc())
         return self._user
 
 
