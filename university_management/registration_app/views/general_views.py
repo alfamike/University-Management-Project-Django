@@ -37,8 +37,8 @@ def login(request):
 
 
 def logout(request):
-    response = redirect('')
-    response.delete_cookie('auth-token')
+    response = redirect('login')
+    response.delete_cookie('auth_token')
     return response
 
 
