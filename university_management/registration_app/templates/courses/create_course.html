@@ -1,43 +1,42 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Create Course{% endblock %}
 
 {% block content %}
-{% load custom_filters %}
 
 <h1>Create Course</h1>
 <p>Fill out the form below to register a new course in the system.</p>
 
 <div class="form-container">
-    <form class="modern-form" action="createCourse/" method="POST">
-        {% csrf_token %}
-<!--        <div class="form-group">-->
-<!--            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>-->
-<!--            {{ form.title|add_class:"form-control" }}-->
-<!--            <small class="form-hint">Enter the title.</small>-->
-<!--        </div>-->
+    <form class="modern-form" id="create-course-form" action="" method="POST">
+        <div class="form-group">
+            <label for="titles-dropdown">Title:</label>
+            <select class="filter-dropdown" id="titles-dropdown" name="title" required></select>
+            <small class="form-hint">Select the title</small>
+        </div>
 
         <div class="form-group">
-            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-            {{ form.name|add_class:"form-control" }}
+            <label for="course_name">Title:</label>
+            <input type="text" id="course_name" name="course_name" required class="form-control">
             <small class="form-hint">Enter the course name.</small>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-            {{ form.description|add_class:"form-control" }}
+            <label for="course_description">Description:</label>
+            <textarea id="course_description" name="course_description" class="form-control"></textarea>
             <small class="form-hint">Enter the course's description.</small>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}</label>
-            {{ form.start_date|add_class:"form-control" }}
+            <label for="course_start_date">Start Date:</label>
+            <input type="date" id="course_start_date" name="course_start_date" required class="form-control">
             <small class="form-hint">Enter the course's start date.</small>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.end_date.id_for_label }}">{{ form.end_date.label }}</label>
-            {{ form.end_date|add_class:"form-control" }}
+            <label for="course_end_date">Start Date:</label>
+            <input type="date" id="course_end_date" name="course_end_date" required class="form-control">
             <small class="form-hint">Enter the course's end date.</small>
         </div>
 
@@ -47,4 +46,13 @@
     </form>
 </div>
 
+<script id="data" type="application/json">
+    {
+        "titles": "{{ titles|safe }}"
+    }
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script type='application/javascript' src="{% static 'js/create_course.js' %}"></script>
 {% endblock %}

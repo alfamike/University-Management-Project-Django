@@ -18,7 +18,7 @@ class Title(models.Model):
 
     def save(self, *args, **kwargs):
 
-        fabric_client_singleton = FabricClientSingleton()
+        fabric_client_singleton = FabricClientSingleton.get_instance()
         client = fabric_client_singleton.get_client()
         user = fabric_client_singleton.get_user()
 

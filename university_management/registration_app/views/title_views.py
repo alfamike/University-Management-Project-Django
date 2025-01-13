@@ -2,23 +2,25 @@ import json
 
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import redirect
 from django.shortcuts import render
-
-from registration_app.forms.form_title import TitleForm
 from registration_app.services_fabric.services_title import Title
 
 
 def create_title(request):
     if request.method == 'POST':
-        form = TitleForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('title_list')
-    else:
-        form = TitleForm()
+        try:
+            data = json.loads(request.body)
+            name = data.get('title_name')
+            description = data.get('title_description', '')
 
-    return render(request, 'titles/create_title.html', {'form': form})
+            title = Title(name=name, description=description)
+            title.save()
+
+            return JsonResponse({"success": True, "message": "Title created successfully"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return render(request, 'titles/create_title.html')
 
 
 def title_list(request):

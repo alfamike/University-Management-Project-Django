@@ -4,21 +4,25 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
-
-from registration_app.forms.form_student import StudentForm
 from registration_app.services_fabric.services_student import Student
 
 
 def create_student(request):
     if request.method == 'POST':
-        form = StudentForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('student_list')
-    else:
-        form = StudentForm()
+        try:
+            data = json.loads(request.body)
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+            email = data.get('email')
 
-    return render(request, 'students/create_student.html', {'form': form})
+            student = Student(first_name=first_name, last_name=last_name, email=email)
+            student.save()
+
+            return JsonResponse({"success": True, "message": "Student created successfully"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return render(request, 'students/create_student.html')
 
 
 def student_list(request):

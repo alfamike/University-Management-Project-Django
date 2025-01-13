@@ -1,38 +1,41 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Create Student{% endblock %}
 
 {% block content %}
-{% load custom_filters %}
 
 <h1>Create Student</h1>
 <p>Fill out the form below to register a new student in the system.</p>
 
 <div class="form-container">
-    <form method="POST" action="createStudent/" class="modern-form">
-        {% csrf_token %}
+    <form class="modern-form" id="create-student-form" action="" method="POST">
         <div class="form-group">
-            <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
-            {{ form.first_name|add_class:"form-control" }}
+            <label for="student_first_name">First name:</label>
+            <input type="text" id="student_first_name" name="student_first_name" required class="form-control">
             <small class="form-hint">Enter the student's first name.</small>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
-            {{ form.last_name|add_class:"form-control" }}
+            <label for="student_last_name">Last name:</label>
+            <input type="text" id="student_last_name" name="student_last_name" required class="form-control">
             <small class="form-hint">Enter the student's last name.</small>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-            {{ form.email|add_class:"form-control" }}
+            <label for="student_email">Email:</label>
+            <input type="email" id="student_email" name="student_email" required class="form-control">
             <small class="form-hint">Provide a valid email address for the student.</small>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create Student</button>
+            <button class="btn btn-primary" type="submit">Create Title</button>
         </div>
     </form>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script type='application/javascript' src="{% static 'js/create_student.js' %}"></script>
 {% endblock %}

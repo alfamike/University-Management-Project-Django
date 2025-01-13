@@ -2,24 +2,38 @@ import json
 
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import redirect
 from django.shortcuts import render
-
-from registration_app.forms.form_course import CourseForm
 from registration_app.services_fabric.services_course import Course
 from registration_app.services_fabric.services_student_course import StudentCourse
 
 
 def create_course(request):
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('course_list')
-    else:
-        form = CourseForm()
+    # TODO
+    # titles = services_title.get_all_titles()
+    titles = [
+        {"id": 1, "name": "Master in Artificial Intelligence"},
+        {"id": 2, "name": "Master in Data Analytics"},
+        {"id": 3, "name": "Master in Robotics"},
+        {"id": 4, "name": "Master in Business Administration"}
+    ]
 
-    return render(request, 'courses/create_course.html', {'form': form})
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            title = data.get('title')
+            name = data.get('title_name')
+            description = data.get('title_description', '')
+            startdate = data.get('startdate')
+            enddate = data.get('enddate')
+
+            course = Course(title=title, name=name, description=description, start_date=startdate, end_date=enddate)
+            course.save()
+
+            return JsonResponse({"success": True, "message": "Course created successfully"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return render(request, 'courses/create_course.html', {'titles': titles})
 
 
 def course_list(request):
