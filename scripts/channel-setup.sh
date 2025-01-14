@@ -19,3 +19,43 @@ peer channel join -b /etc/hyperledger/fabric/channel-artifacts/registration-chan
 
 # Setup completed
 echo "Channel setup completed!"
+
+sleep 5
+echo "Init chaincodes deployment..."
+
+# Deploy Title Chaincode
+peer lifecycle chaincode package title_cc.tar.gz --path /etc/hyperledger/fabric/chaincodes/TitleChaincode.java --lang java --label title_cc_1_0 --tls --cafile /etc/hyperledger/fabric/crypto-config/ordererOrganizations/university.eu/tlsca/tlsca.university.eu-cert.pem --clientauth --keyfile /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp/keystore/priv_sk  --certfile /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp/signcerts/Admin@org1.university.eu-cert.pem
+peer lifecycle chaincode install title_cc.tar.gz --tls --cafile /etc/hyperledger/fabric/crypto-config/ordererOrganizations/university.eu/tlsca/tlsca.university.eu-cert.pem --clientauth --keyfile /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp/keystore/priv_sk  --certfile /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp/signcerts/Admin@org1.university.eu-cert.pem
+peer lifecycle chaincode queryinstalled --tls --cafile /etc/hyperledger/fabric/crypto-config/ordererOrganizations/university.eu/tlsca/tlsca.university.eu-cert.pem --clientauth --keyfile /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp/keystore/priv_sk  --certfile /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp/signcerts/Admin@org1.university.eu-cert.pem
+peer lifecycle chaincode approveformyorg \
+   --channelID registration-channel \
+   --name title_cc \
+   --version 1.0 \
+   --sequence 1 \
+   --package-id title_cc_1.0:HASH \
+   --orderer orderer.university.eu:7050 \
+   --tls \
+   --cafile /etc/hyperledger/fabric/crypto-config/ordererOrganizations/university.eu/tlsca/tlsca.university.eu-cert.pem
+peer lifecycle chaincode checkcommitreadiness \
+   --channelID registration-channel \
+   --name title_cc \
+   --version 1.0 \
+   --sequence 1 \
+   --tls \
+   --cafile /etc/hyperledger/fabric/crypto-config/ordererOrganizations/university.eu/tlsca/tlsca.university.eu-cert.pem
+peer lifecycle chaincode commit \
+   --channelID registration-channel \
+   --name title_cc \
+   --version 1.0 \
+   --sequence 1 \
+   --orderer orderer.university.eu:7050 \
+   --tls \
+   --cafile /etc/hyperledger/fabric/crypto-config/ordererOrganizations/university.eu/tlsca/tlsca.university.eu-cert.pem \
+   --peerAddresses peer0.org1.university.eu:7051 \
+   --tlsRootCertFiles /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls/ca.crt
+peer lifecycle chaincode querycommitted \
+   --channelID registration-channel \
+   --name title_cc
+
+
+

@@ -21,6 +21,7 @@ services:
       - ./crypto-config:/etc/hyperledger/fabric/crypto-config
       - ./crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./scripts:/etc/hyperledger/fabric/scripts
+      - ./registration_app_chaincodes/src/main/java/eu/university:/etc/hyperledger/fabric/chaincodes
     command: bash -c "/etc/hyperledger/fabric/scripts/channel-setup.sh"
     depends_on:
       - orderer.university.eu
