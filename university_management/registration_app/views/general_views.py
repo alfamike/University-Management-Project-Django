@@ -1,11 +1,12 @@
 import json
-import asyncio
+import traceback
+
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-import traceback
-from registration_app.services_fabric.services_fabric import FabricClientSingleton
+
+from registration_app.services_fabric.services_fabric import init_connection
 
 
 # login_hug("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")
@@ -70,19 +71,12 @@ def chat_view(request):
 @csrf_exempt
 def init_fabric(request):
     try:
-        singleton = FabricClientSingleton.get_instance()
+        init_connection()
 
         return JsonResponse({
             'success': True,
-            'message': 'Fabric client initialized correctly for user'}
+            'message': 'Fabric client initialized correctly'}
         )
-
-    except ValueError as e:
-        return JsonResponse({
-            'error': str(e),
-            'message': 'Failed to initialize Fabric client or user.',
-            'stack_trace': traceback.format_exc()
-        }, status=400)
 
     except Exception as e:
         return JsonResponse({

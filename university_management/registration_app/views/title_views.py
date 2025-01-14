@@ -3,6 +3,7 @@ import json
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
+
 from registration_app.services_fabric.services_title import Title
 
 

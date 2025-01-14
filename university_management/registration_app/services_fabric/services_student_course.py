@@ -1,11 +1,12 @@
 import json
+import os
 import uuid
 
 from django.db import models
+from hfc.fabric import Client
 
 from registration_app.services_fabric.services_course import Course
-from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode, \
-    FabricClientSingleton
+from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode
 from registration_app.services_fabric.services_student import Student
 
 
@@ -26,9 +27,18 @@ class StudentCourse(models.Model):
 
     def save(self, *args, **kwargs):
 
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
+
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
 
         existing_student_course = (
             StudentCourse.get_student_course_by_params(
@@ -56,10 +66,18 @@ class StudentCourse(models.Model):
         return response
 
     def delete(self, *args, **kwargs):
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
 
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
 
         response = invoke_chaincode(
             client,
@@ -73,9 +91,19 @@ class StudentCourse(models.Model):
 
     @classmethod
     def all(cls):
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        print("Entering save method of Title...")
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
+
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
 
         response = query_chaincode(
             client,
@@ -94,9 +122,18 @@ class StudentCourse(models.Model):
 
     @classmethod
     def get_courses_by_student(cls, student_id):
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
+
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
         response = query_chaincode(
             client,
             user,
@@ -112,9 +149,19 @@ class StudentCourse(models.Model):
 
     @classmethod
     def get_students_by_course(cls, course_id):
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
+
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
+
         response = query_chaincode(
             client,
             user,
@@ -130,9 +177,19 @@ class StudentCourse(models.Model):
 
     @classmethod
     def get_student_course(cls, student_course_id):
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
+
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
+
         response = query_chaincode(
             client,
             user,
@@ -147,9 +204,19 @@ class StudentCourse(models.Model):
 
     @classmethod
     def get_student_course_by_params(cls, student_id, course_id):
-        fabric_client_singleton = FabricClientSingleton()
-        client = fabric_client_singleton.get_client()
-        user = fabric_client_singleton.get_user()
+        connection_profile_path = os.path.join(
+            os.path.dirname(__file__),
+            'connection-profile.json'
+        )
+        client = Client(net_profile=connection_profile_path)
+
+        try:
+            user = client.get_user(org_name='Org1', name='Admin')
+            print("Fabric user retrieved successfully.")
+        except ValueError as e:
+            print(f"Error retrieving Fabric user: {e}")
+            raise
+
         response = query_chaincode(
             client,
             user,
