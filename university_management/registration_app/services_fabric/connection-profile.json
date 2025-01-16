@@ -5,80 +5,109 @@
   "client": {
     "organization": "Org1",
     "credentialStore": {
-      "path": "crypto_store/hfc-kvs",
-      "cryptoStore": {
-        "path": "crypto_store/hfc-cvs"
-      },
-      "wallet": "crypto_store/wallet"
-    }
-  },
-  "channels": {
-    "registration-channel": {
-      "orderers": [
-        "orderer.university.eu:7050"
-      ],
-      "peers": [
-        "peer0.org1.university.eu:7051",
-        "peer1.org1.university.eu:8051"
-      ]
+      "path": "crypto_store/hfc-kvs"
     }
   },
   "organizations": {
-    "OrdererOrg": {
+    "university.eu": {
       "mspid": "OrdererMSP",
       "orderers": [
         "orderer.university.eu"
+      ]
+    },
+    "org1.university.eu": {
+      "mspid": "Org1MSP",
+      "peers": [
+        "peer0.org1.university.eu",
+        "peer1.org1.university.eu"
       ],
-      "Org1": {
-        "mspid": "Org1MSP",
-        "peers": [
-          "peer0.org1.university.eu",
-          "peer1.org1.university.eu"
-        ],
-        "users": {
-          "Admin": {
-            "cert": "certs/Admin@org1.university.eu-cert.pem",
-            "private_key": "certs/admin_org1_key"
-          }
-        },
-        "certificateAuthorities": [
-          "ca-org1"
-        ]
-      }
+      "certificateAuthorities": [
+        "ca-org1"
+      ]
     }
   },
   "peers": {
     "peer0.org1.university.eu": {
-      "url": "grpc://peer0.org1.university.eu:7051",
+      "url": "peer0.org1.university.eu:7051",
+      "grpcOptions": {
+        "grpc.ssl_target_name_override": "peer0.org1.university.eu"
+      },
       "tlsCACerts": {
-        "path": "certs/ca-peers.crt"
+        "path": "/app/certs/ca_peer0.pem"
       }
     },
     "peer1.org1.university.eu": {
-      "url": "grpc://peer1.org1.university.eu:8051",
+      "url": "peer1.org1.university.eu:8051",
+      "grpcOptions": {
+        "grpc.ssl_target_name_override": "peer1.org1.university.eu"
+      },
       "tlsCACerts": {
-        "path": "certs/ca-peers.crt"
+        "path": "/app/certs/ca_peer1.pem"
       }
     }
   },
   "orderers": {
     "orderer.university.eu": {
-      "url": "grpc://orderer.university.eu:7050",
+      "url": "orderer.university.eu:7050",
+      "grpcOptions": {
+        "grpc.ssl_target_name_override": "orderer.university.eu"
+      },
       "tlsCACerts": {
-        "path": "certs/orderer-tls-ca.pem"
+        "path": "/app/certs/ca_orderer.pem"
       }
     }
   },
   "certificateAuthorities": {
     "ca-org1": {
-      "url": "http://localhost:7054",
-      "grpcOptions": {
-        "verify": true
-      },
+      "url": "http://ca.org1.university.eu:7054",
       "registrar": [
         {
           "enrollId": "admin",
           "enrollSecret": "adminpw"
+        }
+      ]
+    }
+  },
+  "channels": {
+    "registration-channel": {
+      "orderers": [
+        "orderer.university.eu"
+      ],
+      "profiles": [
+        {
+          "name": "default",
+          "channel": {
+            "name": "registration-channel"
+          },
+          "orderer": {
+            "url": "orderer.university.eu:7050",
+            "grpcOptions": {
+              "grpc.ssl_target_name_override": "orderer.university.eu"
+            },
+            "tlsCACerts": {
+              "path": "/app/certs/ca_orderer.pem"
+            }
+          },
+          "peer": {
+            "peer0.org1.university.eu": {
+              "url": "peer0.org1.university.eu:7051",
+              "grpcOptions": {
+                "grpc.ssl_target_name_override": "peer0.org1.university.eu"
+              },
+              "tlsCACerts": {
+                "path": "/app/certs/ca_peer0.pem"
+              }
+            },
+            "peer1.org1.university.eu": {
+              "url": "peer1.org1.university.eu:8051",
+              "grpcOptions": {
+                "grpc.ssl_target_name_override": "peer1.org1.university.eu"
+              },
+              "tlsCACerts": {
+                "path": "/app/certs/ca_peer1.pem"
+              }
+            }
+          }
         }
       ]
     }

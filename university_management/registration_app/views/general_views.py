@@ -6,8 +6,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from registration_app.services_fabric.services_fabric import init_connection
-
 
 # login_hug("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")
 
@@ -66,21 +64,3 @@ def chat_view(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
-
-@csrf_exempt
-def init_fabric(request):
-    try:
-        init_connection()
-
-        return JsonResponse({
-            'success': True,
-            'message': 'Fabric client initialized correctly'}
-        )
-
-    except Exception as e:
-        return JsonResponse({
-            'error': 'An unexpected error occurred.',
-            'message': str(e),
-            'stack_trace': traceback.format_exc()
-        }, status=500)

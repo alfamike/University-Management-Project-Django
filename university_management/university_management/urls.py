@@ -16,7 +16,6 @@ urlpatterns = [
     # Auth
     path('get_nonce/', auth.get_nonce, name='nonce'),
     path('verify_signature/', auth.verify_signature, name='verify_signature'),
-    path('initFabric/', general_views.init_fabric, name='init_fabric'),
 
     # Chat
     path('chat/', general_views.chat_view, name='chat'),

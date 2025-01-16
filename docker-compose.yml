@@ -66,6 +66,7 @@ services:
     expose:
       - 7050
     container_name: orderer.university.eu
+    hostname: orderer.university.eu
     networks:
       - university_network
 
@@ -102,6 +103,7 @@ services:
       - 7051
       - 7052
     container_name: peer0.org1.university.eu
+    hostname: peer0.org1.university.eu
     depends_on:
       - couchdb0.org1.university.eu
     networks:
@@ -162,6 +164,7 @@ services:
       - 8051
       - 8052
     container_name: peer1.org1.university.eu
+    hostname: peer1.org1.university.eu
     depends_on:
       - couchdb1.org1.university.eu
     networks:
@@ -192,6 +195,8 @@ services:
   django:
     image: python:3.11
     container_name: django_app
+    environment:
+      - GRPC_DNS_RESOLVER=ipv4
     volumes: 
       - ./university_management:/app
       - ./certs:/app/certs

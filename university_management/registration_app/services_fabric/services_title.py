@@ -2,11 +2,11 @@ import asyncio
 import json
 import os
 import uuid
-
+from hfc.fabric_network import wallet
 from django.db import models
 from hfc.fabric import Client
 
-from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode
+from registration_app.services_fabric.services_fabric import HyperledgeFabric
 
 
 class Title(models.Model):
@@ -19,11 +19,31 @@ class Title(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        print("Entering save method of Title...")
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        existing_title = Title.get_title(str(self.pk))
+
+        if existing_title is not None:
+            response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
+                chaincode_name='title_cc',
+                function='updateTitle',
+                args=[self.pk, self.name, self.description or '']
+            ))
+        else:
+            response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
+                chaincode_name='title_cc',
+                function='createTitle',
+                args=[self.pk, self.name, self.description or '']
+            ))
+        return response
+
+    def delete(self, *args, **kwargs):
 
         try:
             loop = asyncio.get_event_loop()
@@ -33,81 +53,29 @@ class Title(models.Model):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
-        client = Client(net_profile=connection_profile_path)
-
-        try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
-
-        existing_title = Title.get_title(str(self.pk))
-
-        if existing_title is not None:
-            response = loop.run_until_complete(invoke_chaincode(
-                client,
-                user,
-                chaincode_name='title_cc',
-                function='updateTitle',
-                args=[self.pk, self.name, self.description or '']
-            ))
-        else:
-            response = loop.run_until_complete(invoke_chaincode(
-                client,
-                user,
-                chaincode_name='title_cc',
-                function='createTitle',
-                args=[self.pk, self.name, self.description or '']
-            ))
-        return response
-
-    def delete(self, *args, **kwargs):
-
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
-        try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
-        response = invoke_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
             chaincode_name='title_cc',
             function='deleteTitle',
             args=[self.pk]
-        )
+        ))
         return response
 
     @classmethod
     def all(cls):
 
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = query_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.query_chaincode(
             chaincode_name='title_cc',
             function='queryAllTitles',
             args=[]
-        )
+        ))
 
         titles = json.loads(response)['titles']
         titles_res = []
@@ -119,22 +87,7 @@ class Title(models.Model):
     @classmethod
     def get_title(cls, title_id):
 
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
-        try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
-
-        response = query_chaincode(
-            client,
-            user,
+        response = HyperledgeFabric.query_chaincode(
             chaincode_name='title_cc',
             function='QueryTitle',
             args=[title_id]

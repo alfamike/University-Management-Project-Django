@@ -105,9 +105,13 @@ https://localhost:8000
 | `django`                       | Django Application Backend      | 8000 |
 
 ## Stopping the Network
-To stop and clean up the network, run:
+To stop the network, run:
 ```bash
 docker-compose down
+```
+To stop and clean the volumes, run:
+```bash
+docker-compose down -v
 ```
 
 ## Logs and Debugging

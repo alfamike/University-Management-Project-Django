@@ -89,6 +89,9 @@ Application: &ApplicationDefaults
     Admins:
       Type: Signature
       Rule: "OR('Org1MSP.admin')"
+    Endorsement:
+      Type: Signature
+      Rule: "OR('Org1MSP.peer', 'Org1MSP.admin', 'OrdererMSP.member')"
 
 Channel: &ChannelDefaults
   Policies:

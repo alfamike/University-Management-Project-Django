@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -19,7 +20,7 @@ def create_title(request):
 
             return JsonResponse({"success": True, "message": "Title created successfully"})
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": str(e) + f"Traceback: {traceback.format_exc()}"}, status=500)
     else:
         return render(request, 'titles/create_title.html')
 

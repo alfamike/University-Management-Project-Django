@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import uuid
@@ -5,7 +6,7 @@ import uuid
 from django.db import models
 from hfc.fabric import Client
 
-from registration_app.services_fabric.services_fabric import query_chaincode, invoke_chaincode
+from registration_app.services_fabric.services_fabric import HyperledgeFabric
 
 
 class Student(models.Model):
@@ -19,84 +20,62 @@ class Student(models.Model):
         return f"{self.first_name} {self.last_name}"
 
     def save(self, *args, **kwargs):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         existing_student = Student.get_student(str(self.pk))
 
         if existing_student is not None:
-            response = invoke_chaincode(
-                client,
-                user,
+            response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
                 'student_cc',
                 'UpdateStudent',
                 [str(self.pk), self.first_name, self.last_name, self.email]
-            )
+            ))
         else:
-            response = invoke_chaincode(
-                client,
-                user,
+            response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
                 'student_cc',
                 'CreateStudent',
                 [str(self.pk), self.first_name, self.last_name, self.email]
-            )
+            ))
         return response
 
     def delete(self, *args, **kwargs):
 
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = invoke_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
             'student_cc',
             'UpdateStudent',
             [str(self.pk), self.first_name, self.last_name, self.email, 'true']
-        )
+        ))
         return response
 
     @classmethod
     def all(cls):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = query_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.query_chaincode(
             'student_cc',
             'GetAllStudents',
             []
-        )
+        ))
 
         students = json.loads(response)['students']
         students_res = []
@@ -107,26 +86,19 @@ class Student(models.Model):
 
     @classmethod
     def get_student(cls, student_id):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = query_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.query_chaincode(
             'student_cc',
             'QueryStudent',
             [student_id]
-        )
+        ))
 
         student = json.loads(response)
         student = cls(first_name=student['first_name'], last_name=student['last_name'], email=student['email'])
@@ -134,26 +106,19 @@ class Student(models.Model):
 
     @classmethod
     def get_students_by_title(cls, title_id):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = query_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.query_chaincode(
             'student_cc',
             'GetStudentsByTitle',
             [title_id]
-        )
+        ))
 
         students = json.loads(response)['students']
         students_res = []
@@ -164,26 +129,19 @@ class Student(models.Model):
 
     @classmethod
     def get_students_by_course(cls, course_id):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = query_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.query_chaincode(
             'student_cc',
             'GetStudentsByCourse',
             [course_id]
-        )
+        ))
 
         students = json.loads(response)['students']
         students_res = []
@@ -194,50 +152,36 @@ class Student(models.Model):
 
     @classmethod
     def enroll_student_in_course(cls, students_id, course_id):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = invoke_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
             'student_cc',
             'EnrollStudentsInCourse',
             [students_id, course_id]
-        )
+        ))
 
         return response
 
     @classmethod
     def de_enroll_student_in_course(cls, students_id, courses_id):
-        connection_profile_path = os.path.join(
-            os.path.dirname(__file__),
-            'connection-profile.json'
-        )
-        client = Client(net_profile=connection_profile_path)
-
         try:
-            user = client.get_user(org_name='Org1', name='Admin')
-            print("Fabric user retrieved successfully.")
-        except ValueError as e:
-            print(f"Error retrieving Fabric user: {e}")
-            raise
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                raise RuntimeError("Existing event loop is closed. Creating a new event loop.")
+        except RuntimeError:  # No event loop in the current thread or loop is closed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        response = invoke_chaincode(
-            client,
-            user,
+        response = loop.run_until_complete(HyperledgeFabric.invoke_chaincode(
             'student_cc',
             'DeEnrollStudentsInCourse',
             [students_id, courses_id]
-        )
+        ))
 
         return response
