@@ -21,7 +21,7 @@ services:
       - ./crypto-config:/etc/hyperledger/fabric/crypto-config
       - ./crypto-config/peerOrganizations/org1.university.eu/users/Admin@org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./scripts:/etc/hyperledger/fabric/scripts
-      - ./registration_app_chaincodes/src/main/java/eu/university:/etc/hyperledger/fabric/chaincodes
+      - ./registration_app_chaincodes:/etc/hyperledger/fabric/chaincodes
     command: bash -c "/etc/hyperledger/fabric/scripts/channel-setup.sh"
     depends_on:
       - orderer.university.eu
@@ -98,6 +98,7 @@ services:
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls:/etc/hyperledger/fabric/tls
       - ./channel-artifacts:/etc/hyperledger/fabric/channel-artifacts
+      - /var/run/docker.sock:/var/run/docker.sock
       - peer0.org1.university.eu:/var/hyperledger/production
     expose:
       - 7051
@@ -159,6 +160,7 @@ services:
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/org1.university.eu/peers/peer1.org1.university.eu/tls:/etc/hyperledger/fabric/tls
       - ./channel-artifacts:/etc/hyperledger/fabric/channel-artifacts
+      - /var/run/docker.sock:/var/run/docker.sock
       - peer1.org1.university.eu:/var/hyperledger/production
     expose:
       - 8051

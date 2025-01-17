@@ -62,8 +62,8 @@
       "url": "http://ca.org1.university.eu:7054",
       "registrar": [
         {
-          "enrollId": "admin",
-          "enrollSecret": "adminpw"
+          "enrollId": "django",
+          "enrollSecret": "djangopw"
         }
       ]
     }

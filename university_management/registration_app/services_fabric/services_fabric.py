@@ -23,11 +23,11 @@ class HyperledgeFabric:
             state_store = FileKeyValueStore('crypto_store/hfc-kvs')
 
             # Identity creation
-            with open('crypto_store/hfc-cvs/Org1/cert.pem', 'rb') as cert_file:
+            with open('crypto_store/hfc-cvs/Org1/Admin/cert.pem', 'rb') as cert_file:
                 cert_data = cert_file.read()
             cert_admin = load_pem_x509_certificate(cert_data).public_bytes(encoding=serialization.Encoding.PEM)
 
-            with open('crypto_store/hfc-cvs/Org1//key.pem', 'rb') as key_file:
+            with open('crypto_store/hfc-cvs/Org1/Admin/key.pem', 'rb') as key_file:
                 private_key_data = key_file.read()
             admin_private_key = serialization.load_pem_private_key(private_key_data, password=None)
             admin_private_key_pem = admin_private_key.private_bytes(
@@ -36,12 +36,41 @@ class HyperledgeFabric:
                 encryption_algorithm=serialization.NoEncryption()
             )
 
+            with open('crypto_store/hfc-cvs/Org1/Django/cert.pem', 'rb') as cert_file:
+                cert_data_django = cert_file.read()
+            cert_django = load_pem_x509_certificate(cert_data_django).public_bytes(encoding=serialization.Encoding.PEM)
+
+            with open('crypto_store/hfc-cvs/Org1/Django/key.pem', 'rb') as key_file:
+                private_key_data = key_file.read()
+            django_private_key = serialization.load_pem_private_key(private_key_data, password=None)
+            django_private_key_pem = django_private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+
             # admin_identity_path = os.path.join('crypto_store/wallet', 'admin_org1')
 
-            if not new_wallet.exists('admin_org1'):
-                print("Admin identity not found in the wallet. Adding identity...")
-                user_identity = wallet.Identity("admin_org1", Enrollment(admin_private_key, cert_data))
-                user_identity.CreateIdentity(new_wallet)
+            # if not new_wallet.exists('admin_org1'):
+            #     print("Admin identity not found in the wallet. Adding identity...")
+            #     user_identity = wallet.Identity("admin_org1", Enrollment(admin_private_key, cert_data))
+            #     user_identity.CreateIdentity(new_wallet)
+            #
+            #     # os.makedirs(admin_identity_path, exist_ok=True)
+            #     # with open(os.path.join(admin_identity_path, 'enrollmentCert.pem'), 'wb') as cert_file:
+            #     #     cert_file.write(cert_data)
+            #     # with open(os.path.join(admin_identity_path, 'private_sk'), 'wb') as key_file:
+            #     #     key_file.write(private_key_data)
+            #
+            #     # enrollment = Enrollment(private_key, cert_data)
+            #     print("Admin identity added to the wallet.")
+            # else:
+            #     print("Admin identity already exists in the wallet.")
+
+            if not new_wallet.exists('django'):
+                print("Django identity not found in the wallet. Adding identity...")
+                django_identity = wallet.Identity("django", Enrollment(django_private_key, cert_data_django))
+                django_identity.CreateIdentity(new_wallet)
 
                 # os.makedirs(admin_identity_path, exist_ok=True)
                 # with open(os.path.join(admin_identity_path, 'enrollmentCert.pem'), 'wb') as cert_file:
@@ -50,9 +79,9 @@ class HyperledgeFabric:
                 #     key_file.write(private_key_data)
 
                 # enrollment = Enrollment(private_key, cert_data)
-                print("Admin identity added to the wallet.")
+                print("Django identity added to the wallet.")
             else:
-                print("Admin identity already exists in the wallet.")
+                print("Django identity already exists in the wallet.")
 
             # Set the connection profile path
             connection_profile_path = os.path.join(
@@ -80,9 +109,14 @@ class HyperledgeFabric:
             # client.state_store = state_store
             # client.kv_store_path = 'crypto_store/hfc-kvs'
 
-            admin_user = create_user(name='Admin', org='org1.university.eu', msp_id='Org1MSP',
-                                     state_store=state_store,
-                                     cert_pem=cert_admin, key_pem=admin_private_key_pem, crypto_suite=crypto_suite)
+            # admin_user = create_user(name='Admin', org='org1.university.eu', msp_id='Org1MSP',
+            #                          state_store=state_store,
+            #                          cert_pem=cert_admin, key_pem=admin_private_key_pem, crypto_suite=crypto_suite)
+
+            django_user = create_user(name='Django', org='org1.university.eu', msp_id='Org1MSP',
+                                      state_store=state_store,
+                                      cert_pem=cert_django, key_pem=django_private_key_pem, crypto_suite=crypto_suite)
+
             new_gateway = Gateway()
             options = {'wallet': 'crypto_store/wallet'}
             loop.run_until_complete(new_gateway.connect(connection_profile_path, options))
@@ -98,13 +132,12 @@ class HyperledgeFabric:
             # else:
             #     admin_user = client.get_user('org1.university.eu', 'Admin')
 
-            new_network = loop.run_until_complete(new_gateway.get_network('registration-channel', requestor=admin_user))
+            new_network = loop.run_until_complete(
+                new_gateway.get_network('registration-channel', requestor=django_user))
             print(new_network)
             new_contract = new_network.get_contract('title_cc')
 
             client = new_gateway.get_client()
-
-
 
             # with open('crypto_store/wallet/admin_org1/enrollmentCert.pem', 'rb') as cert_file:
             #     cert_data = cert_file.read()
@@ -123,7 +156,7 @@ class HyperledgeFabric:
             # enrollment = Enrollment(key_wallet, cert_data)
 
             print("Fabric client initialized successfully with the wallet and state store.")
-            return client, admin_user
+            return client, django_user
 
         except FileNotFoundError as e:
             error_message = f"FileNotFoundError: {e}"
