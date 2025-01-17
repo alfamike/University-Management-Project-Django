@@ -29,15 +29,27 @@ sleep 5
 echo "Init chaincodes deployment..."
 
 # Deploy Title Chaincode
-peer lifecycle chaincode package title_cc.tar.gz --path /etc/hyperledger/fabric/chaincodes --lang java --label title_cc_1_0 --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE
+peer lifecycle chaincode package title_cc.tar.gz --path /etc/hyperledger/fabric/chaincodes/title-chaincode --lang java --label title_cc_1_0 --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE
 peer lifecycle chaincode install title_cc.tar.gz --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" --tlsRootCertFiles $CA_PEERO $CA_PEER1
-peer lifecycle chaincode queryinstalled --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" --tlsRootCertFiles $CA_PEERO $CA_PEER1
+PACKAGE_ID=$(peer lifecycle chaincode queryinstalled \
+    --tls \
+    --cafile $ORDERER_TLS_CA \
+    --clientauth \
+    --keyfile $ADMIN_KEY_FILE \
+    --certfile $ADMIN_CERT_FILE \
+    --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" \
+    --tlsRootCertFiles $CA_PEERO $CA_PEER1 | grep "Package ID:" | awk -F' ' '{print $3}' | sed 's/,//')
+
+# Verify that the PACKAGE_ID was extracted
+echo "Extracted Package ID: $PACKAGE_ID"
+
+# peer lifecycle chaincode queryinstalled --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" --tlsRootCertFiles $CA_PEERO $CA_PEER1
 peer lifecycle chaincode approveformyorg \
    --channelID registration-channel \
    --name title_cc \
    --version 1.0 \
    --sequence 1 \
-   --package-id title_cc_1.0:HASH \
+   --package-id $PACKAGE_ID \
    --orderer orderer.university.eu:7050 \
    --tls \
    --cafile $ORDERER_TLS_CA
