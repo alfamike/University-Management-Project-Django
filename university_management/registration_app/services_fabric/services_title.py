@@ -89,7 +89,7 @@ class Title(models.Model):
 
         response = HyperledgeFabric.query_chaincode(
             chaincode_name='title_cc',
-            function='QueryTitle',
+            function='queryTitle',
             args=[title_id]
         )
 

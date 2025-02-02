@@ -10,7 +10,13 @@ export CA_PEER1="/etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.un
 
 # Create the channel
 echo "Creating the channel..."
-peer channel create -o orderer.university.eu:7050 -c registration-channel -f /etc/hyperledger/fabric/channel-artifacts/registration-channel.tx --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --outputBlock /etc/hyperledger/fabric/channel-artifacts/registration-channel.block
+# peer channel create -o orderer.university.eu:7050 -c registration-channel -f /etc/hyperledger/fabric/channel-artifacts/registration-channel.tx --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --outputBlock /etc/hyperledger/fabric/channel-artifacts/registration-channel.block
+curl -X POST https://orderer.university.eu:7050/participation/v1/channels \
+-H "Content-Type: application/json" \
+--data '{
+  "name": "registration-channel",
+  "configBlock": "/etc/hyperledger/fabric/channel-artifacts/registration-channel.block"
+}' --insecure
 
 # Join the peer0 to the channel
 echo "Peer0 joining the channel..."
@@ -29,7 +35,7 @@ sleep 5
 echo "Init chaincodes deployment..."
 
 # Deploy Title Chaincode
-peer lifecycle chaincode package title_cc.tar.gz --path /etc/hyperledger/fabric/chaincodes/title-chaincode --lang java --label title_cc_1_0 --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE
+peer lifecycle chaincode package title_cc.tar.gz --path /etc/hyperledger/fabric/chaincodes/title-chaincode --lang java --label title_cc --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE
 peer lifecycle chaincode install title_cc.tar.gz --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" --tlsRootCertFiles $CA_PEERO $CA_PEER1
 PACKAGE_ID=$(peer lifecycle chaincode queryinstalled \
     --tls \
@@ -43,7 +49,7 @@ PACKAGE_ID=$(peer lifecycle chaincode queryinstalled \
 # Verify that the PACKAGE_ID was extracted
 echo "Extracted Package ID: $PACKAGE_ID"
 
-# peer lifecycle chaincode queryinstalled --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" --tlsRootCertFiles $CA_PEERO $CA_PEER1
+peer lifecycle chaincode queryinstalled --tls --cafile $ORDERER_TLS_CA --clientauth --keyfile $ADMIN_KEY_FILE  --certfile $ADMIN_CERT_FILE --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" --tlsRootCertFiles $CA_PEERO $CA_PEER1
 peer lifecycle chaincode approveformyorg \
    --channelID registration-channel \
    --name title_cc \
@@ -53,23 +59,23 @@ peer lifecycle chaincode approveformyorg \
    --orderer orderer.university.eu:7050 \
    --tls \
    --cafile $ORDERER_TLS_CA
-peer lifecycle chaincode checkcommitreadiness \
-   --channelID registration-channel \
-   --name title_cc \
-   --version 1.0 \
-   --sequence 1 \
-   --tls \
-   --cafile $ORDERER_TLS_CA
-peer lifecycle chaincode commit \
-   --channelID registration-channel \
-   --name title_cc \
-   --version 1.0 \
-   --sequence 1 \
-   --orderer orderer.university.eu:7050 \
-   --tls \
-   --cafile $ORDERER_TLS_CA \
-   --peerAddresses peer0.org1.university.eu:7051 \
-   --tlsRootCertFiles /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls/ca.crt
-peer lifecycle chaincode querycommitted --channelID registration-channel --name title_cc
+# peer lifecycle chaincode checkcommitreadiness \
+#    --channelID registration-channel \
+#    --name title_cc \
+#    --version 1.0 \
+#    --sequence 1 \
+#    --tls \
+#    --cafile $ORDERER_TLS_CA
+# peer lifecycle chaincode commit \
+#    --channelID registration-channel \
+#    --name title_cc \
+#    --version 1.0 \
+#    --sequence 1 \
+#    --orderer orderer.university.eu:7050 \
+#    --tls \
+#    --cafile $ORDERER_TLS_CA \
+#    --peerAddresses "peer0.org1.university.eu:7051" "peer1.org1.university.eu:8051" \
+#    --tlsRootCertFiles /etc/hyperledger/fabric/crypto-config/peerOrganizations/org1.university.eu/peers/peer0.org1.university.eu/tls/ca.crt
+# peer lifecycle chaincode querycommitted --channelID registration-channel --name title_cc
 
 

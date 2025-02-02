@@ -48,8 +48,9 @@ services:
     environment:
       - ORDERER_GENERAL_LOGLEVEL=DEBUG
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+      # - ORDERER_GENERAL_GENESISMETHOD=file
+      # - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
@@ -80,7 +81,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_PEER_GOSSIP_USELEADERELECTION=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.university.eu:8051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.university.eu:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.university.eu:7051
       - CORE_PEER_PROFILE_ENABLED=true
       - CORE_PEER_ID=peer0.org1.university.eu
@@ -169,6 +170,7 @@ services:
     hostname: peer1.org1.university.eu
     depends_on:
       - couchdb1.org1.university.eu
+      - peer0.org1.university.eu
     networks:
       - university_network
 

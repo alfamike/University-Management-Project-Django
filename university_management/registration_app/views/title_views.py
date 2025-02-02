@@ -21,6 +21,7 @@ def create_title(request):
             return JsonResponse({"success": True, "message": "Title created successfully"})
         except Exception as e:
             return JsonResponse({"error": str(e) + f"Traceback: {traceback.format_exc()}"}, status=500)
+        # TODO
     else:
         return render(request, 'titles/create_title.html')
 
