@@ -1,4 +1,4 @@
-# University Hyperledger Fabric Network
+# University Management Project
 
 This repository contains the Docker Compose configuration to set up a Hyperledger Fabric network for a university, including a CA, Orderer, two Peers with CouchDB, and a Django application for interaction with the blockchain.
 
@@ -26,12 +26,14 @@ The network includes:
 .
 ├── crypto-config/               # Cryptographic material
 ├── channel-artifacts/           # Genesis block and channel configuration
+├── admin_org1/                  # Certificate for Org1 Admin
 ├── university_management/       # Django application code
 ├── certs/                       # Certificates for CouchDB and Django
 ├── docker-compose.yml           # Docker Compose configuration
 ├── fabric-ca-server-config/     # CA server configuration
-├── registration_app_chaincodes  # Java chaincodes
-├── scripts                      # Additional configuration scripts
+├── chaincodes/                  # Java chaincodes in independent Maven projects
+├── registration_app_chaincodes/ # Java chaincodes in an unique Maven project
+├── scripts/                     # Additional configuration scripts
 ├── configtx.yaml                # Network policies
 ├── crypto-config.yaml           # Configuration for generating cryptographic material
 └── README.md                    # This README file
@@ -127,8 +129,3 @@ docker-compose down -v
 ## Accesing CouchDB Fauxton UI
 - [CouchDB 0](http://localhost:5984/_utils/#login)
 - [CouchDB 1](http://localhost:5985/_utils/#login)
-
----
-
-For detailed documentation, refer to the [Hyperledger Fabric documentation](https://hyperledger-fabric.readthedocs.io/).
-@ Álvaro Menacho Rodríguez 2024
