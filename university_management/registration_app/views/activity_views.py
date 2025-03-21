@@ -6,6 +6,15 @@ from registration_app.services_fabric.services_activity import Activity
 
 
 def create_activity(request):
+    """
+    Handle the creation of a new activity.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the activity creation.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -24,6 +33,15 @@ def create_activity(request):
 
 
 def remove_activity(request):
+    """
+    Handle the removal of activities.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the activity removal.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -40,6 +58,15 @@ def remove_activity(request):
 
 
 def modify_activity(request):
+    """
+    Handle the modification of an existing activity.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the activity modification.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -67,6 +94,15 @@ def modify_activity(request):
 
 
 def manage_grade_to_activity(request):
+    """
+    Handle the assignment of a grade to a student for a specific activity.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the grade assignment.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:

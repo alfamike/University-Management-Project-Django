@@ -1,5 +1,4 @@
 import asyncio
-import json
 import os
 import traceback
 
@@ -8,10 +7,10 @@ from cryptography.x509 import load_pem_x509_certificate
 from hfc.fabric.user import create_user
 from hfc.fabric_ca.caservice import Enrollment
 from hfc.fabric_network import wallet
+from hfc.fabric_network.gateway import Gateway
 from hfc.util.consts import CC_TYPE_JAVA
 from hfc.util.crypto.crypto import Ecies
 from hfc.util.keyvaluestore import FileKeyValueStore
-from hfc.fabric_network.gateway import Gateway
 
 
 class HyperledgeFabric:

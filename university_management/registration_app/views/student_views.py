@@ -8,6 +8,16 @@ from registration_app.services_fabric.services_student import Student
 
 
 def create_student(request):
+    """
+    Handle the creation of a new student.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the student creation.
+        HttpResponse: A rendered HTML response for the student creation form.
+    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -26,6 +36,16 @@ def create_student(request):
 
 
 def student_list(request):
+    """
+    Display a list of students with optional filters and pagination.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response containing the paginated list of students if the request is AJAX.
+        HttpResponse: A rendered HTML response for the student list.
+    """
     # Filters
     title_filter = request.GET.get('title', None)
     course_filter = request.GET.get('course', None)
@@ -33,6 +53,7 @@ def student_list(request):
     # Prepare the students list
     # TODO
     # students = Student.all()
+    # Mock data for demonstration purposes
     students = [
         {
             "id": 1,
@@ -120,6 +141,7 @@ def student_list(request):
     # Get filters for titles and courses
     # TODO
     # titles = Title.all()
+    # Mock data for demonstration purposes
     titles = [
         {"id": 1, "name": "Master in Artificial Intelligence"},
         {"id": 2, "name": "Master in Data Analytics"},
@@ -129,6 +151,7 @@ def student_list(request):
 
     # Todo
     # courses = Course.all()
+    # Mock data for demonstration purposes
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -175,13 +198,25 @@ def student_list(request):
 
 
 def student_record(request, pk):
-    student = {'id': 5, 'first_name': 'Michael', 'last_name': 'Brown', 'email': 'michael.brown@example.com'}
+    """
+    Display the details of a specific student and their related courses.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+        pk (int): The primary key of the student.
+
+    Returns:
+        HttpResponse: A rendered HTML response for the student record.
+    """
 
     # TODO
     # student = Student.get_student(pk)
+    # Mock data for demonstration purposes
+    student = {'id': 5, 'first_name': 'Michael', 'last_name': 'Brown', 'email': 'michael.brown@example.com'}
 
     # Todo
     # courses = StudentCourse.get_courses_by_student(pk)
+    # Mock data for demonstration purposes
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -199,6 +234,7 @@ def student_record(request, pk):
 
     # TODO
     # titles = services_title.get_all_titles()
+    # Mock data for demonstration purposes
     titles = [
         {"id": 1, "name": "Master in Artificial Intelligence"},
         {"id": 2, "name": "Master in Data Analytics"},
@@ -208,6 +244,7 @@ def student_record(request, pk):
 
     # TODO
     # course_grades = StudentCourse.get_courses_by_student(pk)
+    # Mock data for demonstration purposes
     course_grades = [
         {"id": 1, "course_id": 1, "grade": 90},
         {"id": 2, "course_id": 2, "grade": 85},
@@ -217,6 +254,7 @@ def student_record(request, pk):
 
     # TODO
     # activities_grades = StudentActivityGrade.get_student_activity_grades(pk)
+    # Mock data for demonstration purposes
     activities_grades = [
         {"id": 1, "student": 5, "activity": 1, "grade": 90},
         {"id": 2, "student": 5, "activity": 2, "grade": 85},
@@ -231,6 +269,15 @@ def student_record(request, pk):
 
 
 def modify_student(request):
+    """
+    Handle the modification of an existing student.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the student modification.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     if request.method == 'POST' and is_ajax:
         data = json.loads(request.body)
@@ -255,6 +302,15 @@ def modify_student(request):
 
 
 def remove_student(request):
+    """
+    Handle the removal of a student.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the student removal.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -267,6 +323,15 @@ def remove_student(request):
 
 
 def de_enroll_courses(request):
+    """
+    Handle the de-enrollment of a student from courses.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the de-enrollment process.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -280,6 +345,15 @@ def de_enroll_courses(request):
 
 
 def enroll_courses(request):
+    """
+    Handle the enrollment of a student in courses.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the enrollment process.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -293,6 +367,15 @@ def enroll_courses(request):
 
 # TODO Remove after testing
 def get_activities_by_course_of_activity_grades(request):
+    """
+    Retrieve activities by course and their corresponding grades.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response containing the activities and their grades.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -301,6 +384,7 @@ def get_activities_by_course_of_activity_grades(request):
         course_id = data.get('course_id', None)
 
         # activities = services_activity.get_activities_by_course(course_id)
+        # Mock data for demonstration purposes
         activities = [
             {"id": 1, "name": "Assignment 1", "description": "Complete the first assignment.",
              "due_date": "2024-01-20", "course": 1},

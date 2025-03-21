@@ -9,6 +9,16 @@ from registration_app.services_fabric.services_title import Title
 
 
 def create_title(request):
+    """
+    Handle the creation of a new title.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the title creation.
+        HttpResponse: A rendered HTML response for the title creation form.
+    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -21,14 +31,24 @@ def create_title(request):
             return JsonResponse({"success": True, "message": "Title created successfully"})
         except Exception as e:
             return JsonResponse({"error": str(e) + f"Traceback: {traceback.format_exc()}"}, status=500)
-        # TODO
     else:
         return render(request, 'titles/create_title.html')
 
 
 def title_list(request):
+    """
+    Display a list of titles with pagination.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response containing the paginated list of titles if the request is AJAX.
+        HttpResponse: A rendered HTML response for the title list.
+    """
     # TODO
     # titles = Title.all()
+    # Mock data for demonstration purposes
     titles = [
         {
             "id": 1,
@@ -88,8 +108,19 @@ def title_list(request):
 
 
 def title_record(request, pk):
+    """
+    Display the details of a specific title and its related courses.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+        pk (int): The primary key of the title.
+
+    Returns:
+        HttpResponse: A rendered HTML response for the title record.
+    """
     # TODO
     # title = Title.get_title(pk)
+    # Mock data for demonstration purposes
     title = {
         'id': 1,
         'name': 'Master in Artificial Intelligence',
@@ -99,6 +130,7 @@ def title_record(request, pk):
     # Fetch the related courses
     # TODO
     # courses = Course.get_courses_by_title(pk)
+    # Mock data for demonstration purposes
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -118,6 +150,15 @@ def title_record(request, pk):
 
 
 def modify_title(request):
+    """
+    Handle the modification of an existing title.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the title modification.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -125,9 +166,6 @@ def modify_title(request):
         title_id = data.get('id')
         name = data.get('name')
         description = data.get('description')
-
-        # Modify the title
-        # TODO: Update the title in the database
 
         try:
             title = Title.get_title(title_id)
@@ -143,6 +181,15 @@ def modify_title(request):
 
 
 def remove_title(request):
+    """
+    Handle the removal of a title.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the title removal.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:

@@ -10,10 +10,17 @@ from django.views.decorators.csrf import csrf_exempt
 from eth_account.messages import encode_defunct
 from web3 import Web3
 
-NONCE_STORAGE = {}  # Temporary storage for nonces
+# Temporary storage for nonces
+NONCE_STORAGE = {}
 
 
 def generate_nonce():
+    """
+    Generate a random nonce for the user.
+
+    Returns:
+        str: A random nonce as a hexadecimal string.
+    """
     return binascii.hexlify(os.urandom(16)).decode()
 
 
@@ -21,6 +28,12 @@ def generate_nonce():
 def get_nonce(request):
     """
     Generate a random nonce for the user.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response containing the generated nonce or an error message.
     """
     data = json.loads(request.body)
     address = data.get('address', '')
@@ -37,6 +50,12 @@ def get_nonce(request):
 def verify_signature(request):
     """
     Verify the signature provided by the user.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the result of the verification process.
     """
     data = json.loads(request.body)
     address = data.get('address', '')
@@ -83,6 +102,15 @@ def verify_signature(request):
 
 
 def generate_tokens(address):
+    """
+    Generate JWT tokens for the authenticated user.
+
+    Args:
+        address (str): The user's address.
+
+    Returns:
+        str: The generated JWT access token.
+    """
     payload = {
         'address': address,
         'exp': datetime.utcnow() + timedelta(hours=24)  # Short-lived access token

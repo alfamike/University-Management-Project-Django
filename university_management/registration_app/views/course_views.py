@@ -9,8 +9,19 @@ from registration_app.services_fabric.services_student_course import StudentCour
 
 
 def create_course(request):
+    """
+    Handle the creation of a new course.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the course creation.
+        HttpResponse: A rendered HTML response for the course creation form.
+    """
     # TODO
     # titles = services_title.get_all_titles()
+    # Mock data for demonstration purposes
     titles = [
         {"id": 1, "name": "Master in Artificial Intelligence"},
         {"id": 2, "name": "Master in Data Analytics"},
@@ -38,8 +49,19 @@ def create_course(request):
 
 
 def course_list(request):
+    """
+    Display a list of courses with optional filters and pagination.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response containing the paginated list of courses if the request is AJAX.
+        HttpResponse: A rendered HTML response for the course list.
+    """
     # Todo
     # courses = Course.all()
+    # Mock data for demonstration purposes
     courses = [
         {"id": 1, "name": "Introduction to Programming",
          "description": "Learn the basics of programming using Python.", "start_date": "2024-01-10",
@@ -62,6 +84,7 @@ def course_list(request):
     # Get filters for titles
     # TODO
     # titles = Title.all()
+    # Mock data for demonstration purposes
     titles = [
         {"id": 1, "name": "Master in Artificial Intelligence"},
         {"id": 2, "name": "Master in Data Analytics"},
@@ -123,8 +146,19 @@ def course_list(request):
 
 
 def course_record(request, pk):
+    """
+    Display the details of a specific course and its related activities.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+        pk (int): The primary key of the course.
+
+    Returns:
+        HttpResponse: A rendered HTML response for the course record.
+    """
     # Todo
     # course = Course.get_course(pk)
+    # Mock data for demostration purposes
     course = {"id": 4, "name": "Machine Learning Basics",
               "description": "An introduction to machine learning concepts and algorithms.", "start_date": "2024-04-05",
               "end_date": "2024-08-20", "title": 4}
@@ -132,6 +166,7 @@ def course_record(request, pk):
     # Fetch the related activities
     # TODO
     # activities = Activity.get_activities_by_course(pk)
+    # Mock data for demostration purposes
     activities = [
         {"id": 1, "name": "Assignment 1", "description": "Complete the first assignment.",
          "due_date": "2024-01-20", "course": 1},
@@ -151,6 +186,15 @@ def course_record(request, pk):
 
 
 def modify_course(request):
+    """
+    Handle the modification of an existing course.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the course modification.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -179,6 +223,15 @@ def modify_course(request):
 
 
 def remove_course(request):
+    """
+    Handle the removal of a course.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the course removal.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:
@@ -194,6 +247,15 @@ def remove_course(request):
 
 
 def manage_grade_to_course(request):
+    """
+    Handle the assignment of a grade to a student for a specific course.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the success or failure of the grade assignment.
+    """
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     if request.method == 'POST' and is_ajax:

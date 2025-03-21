@@ -1,15 +1,23 @@
 import asyncio
 import json
-import os
 import uuid
 
 from django.db import models
-from hfc.fabric import Client
 
 from registration_app.services_fabric.services_fabric import HyperledgeFabric
 
 
 class Student(models.Model):
+    """
+    Model representing a Student in the system.
+
+    Attributes:
+        id (UUIDField): The primary key for the student, generated automatically.
+        first_name (CharField): The first name of the student.
+        last_name (CharField): The last name of the student.
+        email (EmailField): The email of the student, must be unique.
+        is_deleted (BooleanField): A flag indicating if the student is deleted, defaults to False.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=80)
     last_name = models.CharField(max_length=80)
@@ -17,9 +25,23 @@ class Student(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
+        """
+        Return the string representation of the student, which is their full name.
+        """
         return f"{self.first_name} {self.last_name}"
 
     def save(self, *args, **kwargs):
+        """
+        Save the student to the database and invoke the appropriate chaincode function
+        on the Hyperledger Fabric network.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            The response from the Hyperledger Fabric network.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -45,7 +67,17 @@ class Student(models.Model):
         return response
 
     def delete(self, *args, **kwargs):
+        """
+        Delete the student from the database and invoke the deleteStudent chaincode function
+        on the Hyperledger Fabric network.
 
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            The response from the Hyperledger Fabric network.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -63,6 +95,12 @@ class Student(models.Model):
 
     @classmethod
     def all(cls):
+        """
+        Retrieve all students from the Hyperledger Fabric network.
+
+        Returns:
+            list: A list of Student instances.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -86,6 +124,15 @@ class Student(models.Model):
 
     @classmethod
     def get_student(cls, student_id):
+        """
+        Retrieve a specific student by their ID from the Hyperledger Fabric network.
+
+        Args:
+            student_id (str): The ID of the student to retrieve.
+
+        Returns:
+            Student: An instance of the Student class.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -106,6 +153,15 @@ class Student(models.Model):
 
     @classmethod
     def get_students_by_title(cls, title_id):
+        """
+        Retrieve all students associated with a specific title from the Hyperledger Fabric network.
+
+        Args:
+            title_id (str): The ID of the title.
+
+        Returns:
+            list: A list of Student instances.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -129,6 +185,15 @@ class Student(models.Model):
 
     @classmethod
     def get_students_by_course(cls, course_id):
+        """
+        Retrieve all students associated with a specific course from the Hyperledger Fabric network.
+
+        Args:
+            course_id (str): The ID of the course.
+
+        Returns:
+            list: A list of Student instances.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -152,6 +217,16 @@ class Student(models.Model):
 
     @classmethod
     def enroll_student_in_course(cls, students_id, course_id):
+        """
+        Enroll a student in a specific course on the Hyperledger Fabric network.
+
+        Args:
+            students_id (str): The ID of the student.
+            course_id (str): The ID of the course.
+
+        Returns:
+            The response from the Hyperledger Fabric network.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -170,6 +245,16 @@ class Student(models.Model):
 
     @classmethod
     def de_enroll_student_in_course(cls, students_id, courses_id):
+        """
+        De-enroll a student from a specific course on the Hyperledger Fabric network.
+
+        Args:
+            students_id (str): The ID of the student.
+            courses_id (str): The ID of the course.
+
+        Returns:
+            The response from the Hyperledger Fabric network.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():

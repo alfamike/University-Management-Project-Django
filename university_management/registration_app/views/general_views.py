@@ -1,10 +1,8 @@
 import json
-import traceback
 
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 
 
 # login_hug("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")
@@ -32,20 +30,56 @@ from django.views.decorators.csrf import csrf_exempt
 #     return render(request, 'templates/query_llama.html')
 
 def login(request):
+    """
+    Render the login page.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        HttpResponse: A rendered HTML response for the login page.
+    """
     return render(request, 'registration/login.html')
 
 
 def logout(request):
+    """
+    Handle user logout by deleting the authentication cookie and redirecting to the login page.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        HttpResponse: A redirect response to the login page.
+    """
     response = redirect('login')
     response.delete_cookie('auth_token')
     return response
 
 
 def home(request):
+    """
+    Render the home page.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        HttpResponse: A rendered HTML response for the home page.
+    """
     return render(request, 'home.html')
 
 
 def chat_view(request):
+    """
+    Handle chat messages sent via POST request and return a response.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request.
+
+    Returns:
+        JsonResponse: A JSON response containing the chat response or an error message.
+    """
     if request.method == 'POST':
         # Get the message from the POST request
         try:

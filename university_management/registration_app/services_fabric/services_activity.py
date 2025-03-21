@@ -1,16 +1,25 @@
 import asyncio
 import json
-import os
 import uuid
 
 from django.db import models
-from hfc.fabric import Client
 
 from registration_app.services_fabric.services_course import Course
 from registration_app.services_fabric.services_fabric import HyperledgeFabric
 
 
 class Activity(models.Model):
+    """
+    Model representing an Activity in the system.
+
+    Attributes:
+        id (UUIDField): The primary key for the activity, generated automatically.
+        course (ForeignKey): A foreign key to the Course model.
+        name (CharField): The name of the activity.
+        description (TextField): A description of the activity, optional.
+        due_date (DateField): The due date of the activity.
+        is_deleted (BooleanField): A flag indicating if the activity is deleted, defaults to False.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     course = models.ForeignKey(Course, related_name='activities', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -19,9 +28,23 @@ class Activity(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
+        """
+        Return the string representation of the activity, which includes its name and course.
+        """
         return f"{self.name} ({self.course})"
 
     def save(self, *args, **kwargs):
+        """
+        Save the activity to the database and invoke the appropriate chaincode function
+        on the Hyperledger Fabric network.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            The response from the Hyperledger Fabric network.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -47,6 +70,17 @@ class Activity(models.Model):
         return response
 
     def delete(self, *args, **kwargs):
+        """
+        Delete the activity from the database and invoke the deleteActivity chaincode function
+        on the Hyperledger Fabric network.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            The response from the Hyperledger Fabric network.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -64,6 +98,12 @@ class Activity(models.Model):
 
     @classmethod
     def all(cls):
+        """
+        Retrieve all activities from the Hyperledger Fabric network.
+
+        Returns:
+            list: A list of Activity instances.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -88,6 +128,15 @@ class Activity(models.Model):
 
     @classmethod
     def get_activity(cls, activity_id):
+        """
+        Retrieve a specific activity by its ID from the Hyperledger Fabric network.
+
+        Args:
+            activity_id (str): The ID of the activity to retrieve.
+
+        Returns:
+            Activity: An instance of the Activity class.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
@@ -110,6 +159,15 @@ class Activity(models.Model):
 
     @classmethod
     def get_activities_by_course(cls, course_id):
+        """
+        Retrieve all activities for a specific course from the Hyperledger Fabric network.
+
+        Args:
+            course_id (str): The ID of the course.
+
+        Returns:
+            list: A list of Activity instances.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_closed():
