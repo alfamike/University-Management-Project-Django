@@ -57,7 +57,7 @@ def title_list(request):
         },
         {
             "id": 2,
-            "name": "Programación Lógica",
+            "name": "Master in Management: Sports Business",
             "description": "Test",
         },
         {
